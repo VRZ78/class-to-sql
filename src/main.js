@@ -1,4 +1,6 @@
 const fs = require('fs');
+const sqlTable = require('./models/SQLTable.js')
+const MySQLRequester = require('./helpers/MySQLRequester.js');
 
 const loadModules = function(path) {
     fs.readdirSync(path).forEach(function(file) {
@@ -14,5 +16,16 @@ const loadModules = function(path) {
     });
 };
 
+
 loadModules(__dirname + "/models");
 loadModules(__dirname + "/helpers");
+
+
+/**
+ * Make class available
+ * @type {{sqlTable: *}}
+ */
+module.exports = {
+    sqlTable : sqlTable,
+    setConnection: MySQLRequester.setConnection
+};

@@ -27,7 +27,8 @@ module.exports = class SQLTable {
      */
     save() {
         return new Promise((resolve, reject) => {
-            [this.dbType + "Requester"].insert(this.tableName, this.sqlMapping).then(function (rows) {
+            require("../helpers/" + this.dbType + "Requester.js").insert(this.tableName, this, this.sqlMapping).then(function (rows) {
+                this.id = rows.insertId;
                 resolve(rows);
             }, function (err) {
                 reject(err);

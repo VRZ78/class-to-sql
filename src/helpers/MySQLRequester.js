@@ -20,12 +20,12 @@ MySQLRequester.setConnection = function (connection) {
  */
 MySQLRequester.insert = function (tableName, values, mapping) {
     return new Promise(function (resolve, reject) {
-        if(!this.connection) {
+        if(!MySQLRequester.connection) {
             reject(new Error("No MySQL connection set. Use setConnection first."));
         }else {
-            let descriptionString = SQLUtils.getTableNamesFromMapping(mapping);
-            let valuesString = SQLUtils.getValuesFromMapping(values, mapping);
-            MySQLRequester.connection.query(`INSERT INTO ${tableName} (${descriptionString}) VALUES ${valuesString}`, function (err, rows) {
+            let descriptionString = SQLUtils.getTableNamesFromMapping(mapping, true);
+            let valuesString = SQLUtils.getValuesFromMapping(values, mapping, true);
+            MySQLRequester.connection.query(`INSERT INTO ${tableName} (${descriptionString}) VALUES (${valuesString});`, function (err, rows) {
               if(err) {
                   reject(err);
               } else {

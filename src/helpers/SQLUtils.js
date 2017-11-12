@@ -7,13 +7,15 @@ const mysql = require('mysql');
  * @param mapping
  * @returns {string}
  */
-SQLUtils.getTableNamesFromMapping = function (mapping) {
+SQLUtils.getTableNamesFromMapping = function (mapping, ignoreId) {
     let descriptionString = '';
     let mappingKeys = Object.keys(mapping);
     for(let i = 0; i < mappingKeys.length; i++) {
-        descriptionString.concat(mysql.escape(mappingKeys[i].sqlName), i === mappingKeys.length - 1 ? "," : "");
+        if(ignoreId && mappingKeys[i] !== "id") {
+            descriptionString = descriptionString.concat(mapping[mappingKeys[i]].sqlName, ',');
+        }
     }
-    return descriptionString;
+    return descriptionString.substr(0, descriptionString.length - 1);
 };
 
 /**
@@ -22,13 +24,15 @@ SQLUtils.getTableNamesFromMapping = function (mapping) {
  * @param mapping
  * @returns {string}
  */
-SQLUtils.getValuesFromMapping = function (values, mapping) {
+SQLUtils.getValuesFromMapping = function (values, mapping, ignoreId) {
     let valuesString = '';
     let mappingKeys = Object.keys(mapping);
     for(let i = 0; i < mappingKeys.length; i++) {
-        valuesString.concat(mysql.escape(SQLUtils.format(values[mappingKeys[i]], mapping[mappingKeys[i].type])), i === mappingKeys.length - 1 ? "," : "");
+        if(ignoreId && mappingKeys[i] !== "id") {
+            valuesString = valuesString.concat(mysql.escape(SQLUtils.format(values[mappingKeys[i]], mapping[mappingKeys[i]].type))).concat(',');
+        }
     }
-    return valuesString;
+    return valuesString.substr(0, valuesString.length - 1);
 };
 
 /**
