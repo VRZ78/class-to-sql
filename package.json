@@ -1,0 +1,14 @@
+{
+    "name": "class-to-sql",
+    "version": "0.0.1",
+    "author": "VRZ78",
+    "description": "SQL persistence for ES6 classes in nodejs",
+    "homepage": "https://github.com/VRZ78/class-to-sql",
+    "dependencies": {
+        "mysql": "^2.15.0"
+    },
+    "devDependencies": {
+    },
+    "repository": "https://github.com/VRZ78/class-to-sql.git",
+    "license": "MIT"
+}
