@@ -1,9 +1,9 @@
 const fs = require('fs');
 
-var loadModules = function(path) {
+const loadModules = function(path) {
     fs.readdirSync(path).forEach(function(file) {
-        var newPath = path + '/' + file;
-        var stat = fs.statSync(newPath);
+        let newPath = path + '/' + file;
+        let stat = fs.statSync(newPath);
         if (stat.isFile()) {
             if (/(.*)\.(js$|coffee$)/.test(file)) {
                 require(newPath);

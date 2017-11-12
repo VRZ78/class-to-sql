@@ -1,6 +1,7 @@
 const MySQLRequester = module.exports;
 
 const mysql = require('mysql');
+const SQLUtils = require('./SQLUtils');
 
 /**
  * Pass the connection object to the library
@@ -17,12 +18,20 @@ MySQLRequester.setConnection = function (connection) {
  * @param mapping: The value to insert
  * @returns {Promise}
  */
-MySQLRequester.insert = function (tableName, value, mapping) {
+MySQLRequester.insert = function (tableName, values, mapping) {
     return new Promise(function (resolve, reject) {
         if(!this.connection) {
             reject(new Error("No MySQL connection set. Use setConnection first."));
         }else {
-            MySQLRequester.connection.query("")
+            let descriptionString = SQLUtils.getTableNamesFromMapping(mapping);
+            let valuesString = SQLUtils.getValuesFromMapping(values, mapping);
+            MySQLRequester.connection.query(`INSERT INTO ${tableName} (${descriptionString}) VALUES ${valuesString}`, function (err, rows) {
+              if(err) {
+                  reject(err);
+              } else {
+                  resolve(rows);
+              }
+            })
         }
     })
 };

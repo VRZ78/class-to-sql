@@ -1,6 +1,8 @@
 /**
  * Created by vroub on 12/11/2017.
  */
+const MySQLRequester = require('../helpers/MySQLRequester');
+
 module.exports = class SQLTable {
 
     constructor(tableName, sqlMapping, dbType) {
@@ -25,7 +27,11 @@ module.exports = class SQLTable {
      */
     save() {
         return new Promise((resolve, reject) => {
-
+            [this.dbType + "Requester"].insert(this.tableName, this.sqlMapping).then(function (rows) {
+                resolve(rows);
+            }, function (err) {
+                reject(err);
+            })
         })
     };
 
