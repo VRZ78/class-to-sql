@@ -25,7 +25,8 @@ loadModules(__dirname + "/helpers");
  * Make class available
  * @type {{sqlTable: *}}
  */
-module.exports = {
-    sqlTable : sqlTable,
-    setConnection: MySQLRequester.setConnection
+module.exports.sqlTable = sqlTable;
+module.exports.setConnection = function(connexion) {
+    MySQLRequester.setConnection(connexion);
 };
+

@@ -10,7 +10,7 @@ module.exports = class Admin extends classToSql.sqlTable {
         const SQL_MAPPING = {
             id: {
                 sqlName: "idAdmin",
-                type: "String"
+                type: "Number"
             },
             login: {
                 sqlName: "identifiantAdmin",

@@ -27,7 +27,7 @@ module.exports = class SQLTable {
      */
     save() {
         return new Promise((resolve, reject) => {
-            require("../helpers/" + this.dbType + "Requester.js").insert(this.tableName, this, this.sqlMapping).then(function (rows) {
+            require("../helpers/" + this.dbType + "Requester.js").insert(this.tableName, this, this.sqlMapping).then((rows) => {
                 this.id = rows.insertId;
                 resolve(rows);
             }, function (err) {
@@ -41,23 +41,40 @@ module.exports = class SQLTable {
      */
     update() {
         return new Promise((resolve, reject) => {
-
+            require("../helpers/" + this.dbType + "Requester.js").update(this.tableName, this, this.sqlMapping).then((rows) => {
+                this.id = rows.insertId;
+                resolve(rows);
+            }, function (err) {
+                reject(err);
+            })
         })
     };
 
     /**
-     * Delete from the db
+     * Update several instances based on condition
+     */
+    static update(values, condition) {
+
+    }
+
+    /**
+     * Delete the instance from the db
      */
     remove() {
         return new Promise((resolve, reject) => {
-
+            require("../helpers/" + this.dbType + "Requester.js").delete(this.tableName, this.id, this.sqlMapping.id.sqlName).then((rows) => {
+                this.id = rows.insertId;
+                resolve(rows);
+            }, function (err) {
+                reject(err);
+            })
         })
     };
 
     /**
-     * Return all the instances of the class stored in the DB
+     * Return specific instances according to params
      */
-    findAll() {
+    static find(params) {
         return new Promise((resolve, reject) => {
 
         })
@@ -66,19 +83,9 @@ module.exports = class SQLTable {
     /**
      * Same as find all, but populate attributes that reference other classes
      */
-    findAndPopulate() {
+    static findAndPopulate(params) {
         return new Promise((resolve, reject) => {
 
         })
     }
-
-    /**
-     * Perform a specific request
-     */
-    find(params) {
-        return new Promise((resolve, reject) => {
-
-        })
-    }
-
 };

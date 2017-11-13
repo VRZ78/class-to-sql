@@ -3,7 +3,7 @@
  */
 const mysql = require('mysql');
 const classToSql = require('../src/main.js');
-const Admin = require('./models/admin.js');
+const CalEvent = require('./models/CalEvent.js');
 
 classToSql.setConnection(mysql.createConnection({
     host     : 'localhost',
@@ -12,9 +12,36 @@ classToSql.setConnection(mysql.createConnection({
     database : 'belair'
 }));
 
-let newUser = new Admin("vrz", "pass", "Roubs", "Victor", "vroubi78@gmail.com");
-newUser.save().then(function (rows) {
-    console.log(rows)
-}, function (err) {
-    console.log(err);
-});
+// Insert with dates
+let newEvent;
+const insert = function () {
+    newEvent = new CalEvent(undefined, "Test Event", "Description Event", "ici", 14, 15, 16, 15, new Date(), new Date());
+    newEvent.save().then(function (rows) {
+        console.log(rows.insertId);
+    }, function (err) {
+        console.log(err);
+    })
+};
+
+// Update
+const update = function () {
+    newEvent = new CalEvent(644, "Test Event2", "Description Event2", "ici", 14, 15, 16, 15, new Date(), new Date());
+    newEvent.update().then(function (rows) {
+        console.log(rows);
+    }, function (err) {
+        console.log(err);
+    })
+};
+
+// Remove
+const remove = function () {
+    newEvent = new CalEvent(644, "Test Event2", "Description Event2", "ici", 14, 15, 16, 15, new Date(), new Date());
+    newEvent.remove().then(function (rows) {
+        console.log(rows);
+    }, function (err) {
+        console.log(err);
+    })
+};
+
+// Remove
+insert();
