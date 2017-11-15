@@ -5,10 +5,8 @@ const MySQLRequester = require('../helpers/MySQLRequester');
 
 module.exports = class SQLTable {
 
-    constructor(tableName, sqlMapping, dbType) {
-        this.tableName = tableName;
-        this.sqlMapping = sqlMapping;
-        dbType ? this.dbType = dbType : this.dbType = "MySQL";
+    constructor() {
+
     }
 
     /**
@@ -27,7 +25,7 @@ module.exports = class SQLTable {
      */
     save() {
         return new Promise((resolve, reject) => {
-            require("../helpers/" + this.dbType + "Requester.js").insert(this.tableName, this, this.sqlMapping).then((rows) => {
+            require("../helpers/" + this.DB_TYPE + "Requester.js").insert(this.TABLE_NAME, this, this.SQL_MAPPING).then((rows) => {
                 this.id = rows.insertId;
                 resolve(rows);
             }, function (err) {
@@ -41,7 +39,7 @@ module.exports = class SQLTable {
      */
     update() {
         return new Promise((resolve, reject) => {
-            require("../helpers/" + this.dbType + "Requester.js").update(this.tableName, this, this.sqlMapping).then((rows) => {
+            require("../helpers/" + this.DB_TYPE + "Requester.js").update(this.TABLE_NAME, this, this.SQL_MAPPING).then((rows) => {
                 this.id = rows.insertId;
                 resolve(rows);
             }, function (err) {
@@ -62,7 +60,7 @@ module.exports = class SQLTable {
      */
     remove() {
         return new Promise((resolve, reject) => {
-            require("../helpers/" + this.dbType + "Requester.js").delete(this.tableName, this.id, this.sqlMapping.id.sqlName).then((rows) => {
+            require("../helpers/" + this.DB_TYPE + "Requester.js").delete(this.TABLE_NAME, this.id, this.SQL_MAPPING.id.sqlName).then((rows) => {
                 this.id = rows.insertId;
                 resolve(rows);
             }, function (err) {
@@ -74,9 +72,14 @@ module.exports = class SQLTable {
     /**
      * Return specific instances according to params
      */
-    static find(params) {
+    static find(conditions, manipulations) {
         return new Promise((resolve, reject) => {
-
+            require("../helpers/" + this.DB_TYPE + "Requester.js").select(this.TABLE_NAME, this, this.SQL_MAPPING, conditions, manipulations).then((rows) => {
+                this.id = rows.insertId;
+                resolve(rows);
+            }, function (err) {
+                reject(err);
+            })
         })
     }
 

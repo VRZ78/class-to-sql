@@ -5,9 +5,12 @@ const classToSql = require("../../src/main.js")
 
 module.exports = class Admin extends classToSql.sqlTable {
 
-    constructor(login, password, firstName, lastName, mailAdmin) {
-        const TABLE_NAME = "admin";
-        const SQL_MAPPING = {
+    static get TABLE_NAME () {
+        return  "admin";
+    }
+
+    static get SQL_MAPPING () {
+        return {
             id: {
                 sqlName: "idAdmin",
                 type: "Number"
@@ -32,8 +35,15 @@ module.exports = class Admin extends classToSql.sqlTable {
                 sqlName: "mailAdmin",
                 type: "String"
             }
-        };
-        super(TABLE_NAME, SQL_MAPPING);
+        }
+    };
+
+    static get DB_TYPE() {
+        return "MySQL";
+    }
+
+    constructor(login, password, firstName, lastName, mailAdmin) {
+        super();
         this.login = login;
         this.password = password;
         this.firstName = firstName;

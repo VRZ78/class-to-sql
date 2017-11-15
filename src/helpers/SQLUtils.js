@@ -112,3 +112,22 @@ SQLUtils.formatConditionSign = function (sign) {
             return "<>";
     }
 };
+
+/**
+ * Instantiate new object from the SQL rows
+ * @param className
+ * @param rows
+ */
+SQLUtils.createObjectsFromRow = function (className, rows) {
+    let objects = [];
+    let classKeys = Object.keys(className.SQL_MAPPING);
+    for(let i = 0; i < rows.length; i++) {
+        objects.push(new arguments[0]());
+        for (let j = 0; j < classKeys.length; j++) {
+            objects[i][classKeys[j]] = rows[i][className.SQL_MAPPING[classKeys[j]].sqlName];
+        }
+    }
+    return objects;
+};
+
+

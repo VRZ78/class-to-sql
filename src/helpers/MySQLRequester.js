@@ -85,3 +85,39 @@ MySQLRequester.delete = function (tableName, id, fieldName) {
         }
     })
 };
+
+/**
+ * Perform a select on a table. If no conditions are passed, select *
+ * @param tableName
+ * @param className
+ * @param mapping
+ * @param conditions
+ * @param manipulations
+ */
+MySQLRequester.select = function (tableName, className, mapping, conditions, manipulations) {
+    return new Promise(function (resolve, reject) {
+        if(!MySQLRequester.connection) {
+            reject(new Error("No MySQL connection set. Use setConnection first."));
+        }else {
+            let manipulationString = SQLUtils.getManipulationString(manipulations);
+            if(!conditions) {
+                MySQLRequester.connection.query(`SELECT * FROM ${tableName} ${manipulationString};`, function (err, rows) {
+                    if(err) {
+                        reject(err);
+                    } else {
+                        resolve(SQLUtils.createObjectsFromRow(className, rows));
+                    }
+                });
+            } else {
+                let conditionsString = SQLUtils.getConditionString(mapping, conditions);
+                MySQLRequester.connection.query(`SELECT * FROM ${tableName} WHERE ${conditionsString} ${manipulationString};`, function (err, rows) {
+                    if(err) {
+                        reject(err);
+                    } else {
+                        resolve(rows);
+                    }
+                });
+            }
+        }
+    })
+};

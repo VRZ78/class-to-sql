@@ -43,5 +43,15 @@ const remove = function () {
     })
 };
 
-// Remove
-insert();
+// Find all
+const findAll = function () {
+    CalEvent.find().then(function (calevents) {
+        console.log(calevents)
+    }, function (err) {
+        console.log(err);
+    });
+};
+
+findAll()
+
+

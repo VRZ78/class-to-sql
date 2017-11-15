@@ -5,9 +5,12 @@ const classToSql = require("../../src/main.js")
 
 module.exports = class CalEvent extends classToSql.sqlTable {
 
-    constructor(id, title, description, lieu, heureDeb, minuteDeb, heureFin, minuteFin, dateDeb, dateFin) {
-        const TABLE_NAME = "evenement";
-        const SQL_MAPPING = {
+    static get TABLE_NAME () {
+        return  "evenement";
+    }
+
+    static get SQL_MAPPING () {
+        return {
             id: {
                 sqlName: "idEv",
                 type: "Number"
@@ -48,8 +51,16 @@ module.exports = class CalEvent extends classToSql.sqlTable {
                 sqlName: "dateFinEv",
                 type: "Date"
             }
-        };
-        super(TABLE_NAME, SQL_MAPPING);
+        }
+    };
+
+    static get DB_TYPE() {
+        return "MySQL";
+    }
+
+    constructor(id, title, description, lieu, heureDeb, minuteDeb, heureFin, minuteFin, dateDeb, dateFin) {
+
+        super();
         this.id = id;
         this.title = title;
         this.description = description;
