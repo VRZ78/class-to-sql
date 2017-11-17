@@ -52,6 +52,22 @@ const findAll = function () {
     });
 };
 
-findAll()
+const findAllManipulation = function (manipulations) {
+    CalEvent.find(undefined, manipulations).then(function (calevents) {
+        console.log(calevents)
+    }, function (err) {
+        console.log(err);
+    });
+}
+
+const findAllConditionManipulation = function (condition, manipulations) {
+    CalEvent.find(condition, manipulations).then(function (calevents) {
+        console.log(calevents)
+    }, function (err) {
+        console.log(err);
+    });
+}
+
+findAllConditionManipulation({idEv: {$gt: 300}},{orderBy: {value: "title", way: 'ASC'}, limit: 10});
 
 

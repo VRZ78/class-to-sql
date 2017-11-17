@@ -99,7 +99,7 @@ MySQLRequester.select = function (tableName, className, mapping, conditions, man
         if(!MySQLRequester.connection) {
             reject(new Error("No MySQL connection set. Use setConnection first."));
         }else {
-            let manipulationString = SQLUtils.getManipulationString(manipulations);
+            let manipulationString = SQLUtils.getManipulationString(manipulations, mapping);
             if(!conditions) {
                 MySQLRequester.connection.query(`SELECT * FROM ${tableName} ${manipulationString};`, function (err, rows) {
                     if(err) {
@@ -110,7 +110,7 @@ MySQLRequester.select = function (tableName, className, mapping, conditions, man
                 });
             } else {
                 let conditionsString = SQLUtils.getConditionString(mapping, conditions);
-                MySQLRequester.connection.query(`SELECT * FROM ${tableName} WHERE ${conditionsString} ${manipulationString};`, function (err, rows) {
+                MySQLRequester.connection.query(`SELECT * FROM ${tableName} WHERE ${conditionsString}  ${manipulationString};`, function (err, rows) {
                     if(err) {
                         reject(err);
                     } else {

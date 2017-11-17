@@ -29,7 +29,7 @@ SQLUtils.getValuesFromMapping = function (values, mapping, ignoreId) {
     let mappingKeys = Object.keys(mapping);
     for(let i = 0; i < mappingKeys.length; i++) {
         if(ignoreId && mappingKeys[i] !== "id") {
-            valuesString = valuesString.concat(mysql.escape(SQLUtils.format(values[mappingKeys[i]], mapping[mappingKeys[i]].type))).concat(',');
+            valuesString = valuesString.concat(mysql.escape(SQLUtils.formatValue(values[mappingKeys[i]], mapping[mappingKeys[i]].type))).concat(',');
         }
     }
     return valuesString.substr(0, valuesString.length - 1);
@@ -46,7 +46,7 @@ SQLUtils.getUpdateString = function (values, mapping) {
     for(let i = 0; i < mappingKeys.length; i++) {
         if(mappingKeys[i] !== "id") {
             updateString = updateString.concat(mapping[mappingKeys[i]].sqlName).concat(" = ");
-            updateString = updateString.concat(mysql.escape(SQLUtils.format(values[mappingKeys[i]], mapping[mappingKeys[i]].type))).concat(', ');
+            updateString = updateString.concat(mysql.escape(SQLUtils.formatValue(values[mappingKeys[i]], mapping[mappingKeys[i]].type))).concat(', ');
         }
     }
     return updateString.substr(0, updateString.length - 2);
@@ -61,17 +61,23 @@ SQLUtils.getConditionString = function (mapping, condition) {
     let conditionString = '';
     let conditionsKeys = Object.keys(condition);
     for(let i = 0; i < conditionsKeys.length; i++) {
-        conditionString = conditionString.concat(conditionsKeys[i]).concat(SQLUtils.formatConditionSign(Object.keys(condition[i])[0])).concat(condition[i][Object.keys(condition[i])[0]]).concat("AND");
+        conditionString = conditionString.concat(conditionsKeys[i]).concat(" ").concat(SQLUtils.formatConditionSign(Object.keys(condition[conditionsKeys[i]])[0])).concat(" ").concat(condition[conditionsKeys[i]][Object.keys(condition[conditionsKeys[i]])[0]]).concat(" AND");
     }
-    return conditionString;
+    return conditionString.substr(0, conditionString.length - 4);
 };
 
 /**
  * Build limit and OrderBy
- * @param manipulation
+ * @param manipulations
+ * @param mapping
  */
-SQLUtils.getManipulationString = function (manipulation) {
-
+SQLUtils.getManipulationString = function (manipulations, mapping) {
+    let manipulationString = '';
+    let manipulationKeys = Object.keys(manipulations);
+    for(let i = 0; i < manipulationKeys.length; i++) {
+        manipulationString = manipulationString.concat(SQLUtils.formatManipulation(manipulationKeys[i], manipulations[manipulationKeys[i]], mapping, Object.keys(mapping))).concat(" ");
+    }
+    return manipulationString;
 };
 
 
@@ -80,7 +86,7 @@ SQLUtils.getManipulationString = function (manipulation) {
  * @param value
  * @param type
  */
-SQLUtils.format = function(value, type) {
+SQLUtils.formatValue = function(value, type) {
         switch(type) {
             case "String" :
                 return String(value);
@@ -110,6 +116,22 @@ SQLUtils.formatConditionSign = function (sign) {
             return "<=";
         case "$ne"  :
             return "<>";
+    }
+};
+
+/**
+ * Create a string for post request manipulation
+ * @param manipulationType
+ * @param manipulationValue
+ * @param mapping
+ * @param mappingKeys
+ */
+SQLUtils.formatManipulation = function (manipulationType, manipulationValue, mapping, mappingKeys) {
+    switch (manipulationType) {
+        case "orderBy" :
+            return `ORDER BY ${mapping[manipulationValue.value].sqlName} ${manipulationValue.way}`;
+        case "limit" :
+            return `LIMIT ${manipulationValue}`
     }
 };
 
