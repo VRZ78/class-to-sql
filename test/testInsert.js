@@ -58,7 +58,7 @@ const findAllManipulation = function (manipulations) {
     }, function (err) {
         console.log(err);
     });
-}
+};
 
 const findAllConditionManipulation = function (condition, manipulations) {
     CalEvent.find(condition, manipulations).then(function (calevents) {
@@ -66,8 +66,8 @@ const findAllConditionManipulation = function (condition, manipulations) {
     }, function (err) {
         console.log(err);
     });
-}
+};
 
-findAllConditionManipulation({idEv: {$gt: 300}},{orderBy: {value: "title", way: 'ASC'}, limit: 10});
+findAllConditionManipulation({id: {$gt: 300}, heureDeb: {$eq: 16}},{orderBy: {value: "title", way: 'ASC'}, limit: 10});
 
 

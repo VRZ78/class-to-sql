@@ -110,11 +110,11 @@ MySQLRequester.select = function (tableName, className, mapping, conditions, man
                 });
             } else {
                 let conditionsString = SQLUtils.getConditionString(mapping, conditions);
-                MySQLRequester.connection.query(`SELECT * FROM ${tableName} WHERE ${conditionsString}  ${manipulationString};`, function (err, rows) {
+                MySQLRequester.connection.query(`SELECT * FROM ${tableName} WHERE ${conditionsString} ${manipulationString};`, function (err, rows) {
                     if(err) {
                         reject(err);
                     } else {
-                        resolve(rows);
+                        resolve(SQLUtils.createObjectsFromRow(className, rows));
                     }
                 });
             }

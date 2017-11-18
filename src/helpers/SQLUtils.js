@@ -5,6 +5,7 @@ const mysql = require('mysql');
 /**
  * Return a string with the column name of a table
  * @param mapping
+ * @param ignoreId
  * @returns {string}
  */
 SQLUtils.getColumnNamesFromMapping = function (mapping, ignoreId) {
@@ -22,6 +23,7 @@ SQLUtils.getColumnNamesFromMapping = function (mapping, ignoreId) {
  * Return a string the values formatted according to the type
  * @param values
  * @param mapping
+ * @param ignoreId
  * @returns {string}
  */
 SQLUtils.getValuesFromMapping = function (values, mapping, ignoreId) {
@@ -61,9 +63,10 @@ SQLUtils.getConditionString = function (mapping, condition) {
     let conditionString = '';
     let conditionsKeys = Object.keys(condition);
     for(let i = 0; i < conditionsKeys.length; i++) {
-        conditionString = conditionString.concat(conditionsKeys[i]).concat(" ").concat(SQLUtils.formatConditionSign(Object.keys(condition[conditionsKeys[i]])[0])).concat(" ").concat(condition[conditionsKeys[i]][Object.keys(condition[conditionsKeys[i]])[0]]).concat(" AND");
+        let currentConditionKeys = Object.keys(condition[conditionsKeys[i]]);
+        conditionString = conditionString.concat(mapping[conditionsKeys[i]].sqlName).concat(" ").concat(SQLUtils.formatConditionSign(currentConditionKeys[0])).concat(" ").concat(condition[conditionsKeys[i]][currentConditionKeys[0]]).concat(" AND ");
     }
-    return conditionString.substr(0, conditionString.length - 4);
+    return conditionString.substr(0, conditionString.length - 5);
 };
 
 /**
@@ -106,6 +109,8 @@ SQLUtils.formatValue = function(value, type) {
  */
 SQLUtils.formatConditionSign = function (sign) {
     switch(sign) {
+        case "$eq" :
+            return "=";
         case "$gt" :
             return ">";
         case "$lt" :
