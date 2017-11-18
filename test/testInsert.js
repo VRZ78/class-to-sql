@@ -4,6 +4,7 @@
 const mysql = require('mysql');
 const classToSql = require('../src/main.js');
 const CalEvent = require('./models/CalEvent.js');
+const Admin = require('./models/Admin.js');
 
 classToSql.setConnection(mysql.createConnection({
     host     : 'localhost',
@@ -68,6 +69,19 @@ const findAllConditionManipulation = function (condition, manipulations) {
     });
 };
 
-findAllConditionManipulation({id: {$gt: 300}, heureDeb: {$eq: 16}},{orderBy: {value: "title", way: 'ASC'}, limit: 10});
+// findAllConditionManipulation({id: {$gt: 300}, heureDeb: {$eq: 16}},{orderBy: {value: "title", way: 'ASC'}, limit: 10});
+
+
+const findAndPopulate = function (condition, manipulation) {
+    Admin.findAndPopulate(condition, manipulation).then(function (admins) {
+        console.log(admins)
+    }, function (err) {
+        console.log(err);
+    });
+};
+
+findAndPopulate();
+
+
 
 

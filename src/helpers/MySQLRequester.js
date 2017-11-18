@@ -20,17 +20,17 @@ MySQLRequester.setConnection = function (connection) {
  */
 MySQLRequester.insert = function (tableName, values, mapping) {
     return new Promise(function (resolve, reject) {
-        if(!MySQLRequester.connection) {
+        if (!MySQLRequester.connection) {
             reject(new Error("No MySQL connection set. Use setConnection first."));
-        }else {
+        } else {
             let descriptionString = SQLUtils.getColumnNamesFromMapping(mapping, true);
             let valuesString = SQLUtils.getValuesFromMapping(values, mapping, true);
             MySQLRequester.connection.query(`INSERT INTO ${tableName} (${descriptionString}) VALUES (${valuesString});`, function (err, rows) {
-              if(err) {
-                  reject(err);
-              } else {
-                  resolve(rows);
-              }
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
             })
         }
     })
@@ -46,14 +46,14 @@ MySQLRequester.insert = function (tableName, values, mapping) {
  */
 MySQLRequester.update = function (tableName, values, mapping, conditions) {
     return new Promise(function (resolve, reject) {
-        if(!MySQLRequester.connection) {
+        if (!MySQLRequester.connection) {
             reject(new Error("No MySQL connection set. Use setConnection first."));
-        }else {
-            if(!conditions) {
+        } else {
+            if (!conditions) {
                 // Update a single instance
                 let updateString = SQLUtils.getUpdateString(values, mapping);
                 MySQLRequester.connection.query(`UPDATE ${tableName} SET ${updateString} WHERE ${mapping.id.sqlName} = ${values.id};`, function (err, rows) {
-                    if(err) {
+                    if (err) {
                         reject(err);
                     } else {
                         resolve(rows);
@@ -72,11 +72,11 @@ MySQLRequester.update = function (tableName, values, mapping, conditions) {
  */
 MySQLRequester.delete = function (tableName, id, fieldName) {
     return new Promise(function (resolve, reject) {
-        if(!MySQLRequester.connection) {
+        if (!MySQLRequester.connection) {
             reject(new Error("No MySQL connection set. Use setConnection first."));
-        }else {
+        } else {
             MySQLRequester.connection.query(`DELETE FROM ${tableName} WHERE ${fieldName} = ${id};`, function (err, rows) {
-                if(err) {
+                if (err) {
                     reject(err);
                 } else {
                     resolve(rows);
@@ -96,28 +96,64 @@ MySQLRequester.delete = function (tableName, id, fieldName) {
  */
 MySQLRequester.select = function (tableName, className, mapping, conditions, manipulations) {
     return new Promise(function (resolve, reject) {
-        if(!MySQLRequester.connection) {
+        if (!MySQLRequester.connection) {
             reject(new Error("No MySQL connection set. Use setConnection first."));
-        }else {
+        } else {
             let manipulationString = SQLUtils.getManipulationString(manipulations, mapping);
-            if(!conditions) {
+            if (!conditions) {
+                // Without conditions
                 MySQLRequester.connection.query(`SELECT * FROM ${tableName} ${manipulationString};`, function (err, rows) {
-                    if(err) {
+                    if (err) {
                         reject(err);
                     } else {
                         resolve(SQLUtils.createObjectsFromRow(className, rows));
                     }
                 });
             } else {
+                // With condition
                 let conditionsString = SQLUtils.getConditionString(mapping, conditions);
                 MySQLRequester.connection.query(`SELECT * FROM ${tableName} WHERE ${conditionsString} ${manipulationString};`, function (err, rows) {
-                    if(err) {
+                    if (err) {
                         reject(err);
                     } else {
                         resolve(SQLUtils.createObjectsFromRow(className, rows));
                     }
                 });
             }
+        }
+    })
+};
+
+/**
+ * Perform a select on different tables and populate each one. If no conditions are passed, select *
+ * @param tableName
+ * @param className
+ * @param mapping
+ * @param conditions
+ * @param manipulations
+ */
+MySQLRequester.selectCrossTable = function (tableName, className, mapping, conditions, manipulations) {
+    return new Promise(function (resolve, reject) {
+        if (!MySQLRequester.connection) {
+            reject(new Error("No MySQL connection set. Use setConnection first."));
+        } else {
+            let tableString = SQLUtils.getTableString(mapping);
+            let manipulationString = '';
+            if (manipulations) {
+                manipulationString = SQLUtils.getManipulationString(manipulations, mapping);
+            }
+            let conditionsString = '';
+            if(conditions) {
+                conditionsString = SQLUtils.getConditionString(mapping, conditions);
+            }
+            let tableLinkString = SQLUtils.getTableLinkString(mapping, tableName);
+            MySQLRequester.connection.query(`SELECT * FROM ${tableName}${tableString.length > 0 ? ',' + tableString : ''} WHERE ${tableLinkString} ${conditionsString ? 'AND' : '' } ${conditionsString} ${manipulationString};`, function (err, rows) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(SQLUtils.createObjectsFromRow(className, rows, mapping));
+                }
+            });
         }
     })
 };

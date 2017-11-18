@@ -86,9 +86,14 @@ module.exports = class SQLTable {
     /**
      * Same as find all, but populate attributes that reference other classes
      */
-    static findAndPopulate(params) {
+    static findAndPopulate(conditions, manipulations) {
         return new Promise((resolve, reject) => {
-
+            require("../helpers/" + this.DB_TYPE + "Requester.js").selectCrossTable(this.TABLE_NAME, this, this.SQL_MAPPING, conditions, manipulations).then((rows) => {
+                this.id = rows.insertId;
+                resolve(rows);
+            }, function (err) {
+                reject(err);
+            })
         })
     }
 };

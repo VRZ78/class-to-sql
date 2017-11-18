@@ -83,6 +83,35 @@ SQLUtils.getManipulationString = function (manipulations, mapping) {
     return manipulationString;
 };
 
+/**
+ * Return a string with the different tables referenced in a mapping
+ * @param: mapping
+ */
+SQLUtils.getTableString = function (mapping) {
+    let tableString = '';
+    let mappingKeys = Object.keys(mapping);
+    for(let i = 0; i < mappingKeys.length; i++) {
+        if(mapping[mappingKeys[i]].references) {
+            tableString = tableString.concat(mapping[mappingKeys[i]].references.TABLE_NAME).concat(',');
+        }
+    }
+    return tableString.substr(0, tableString.length - 1);
+};
+
+/**
+ * Build a string that links the related tables
+ * @param mapping
+ */
+SQLUtils.getTableLinkString = function (mapping, tableName) {
+    let LinkString = '';
+    let mappingKeys = Object.keys(mapping);
+    for(let i = 0; i < mappingKeys.length; i++) {
+        if(mapping[mappingKeys[i]].references) {
+            LinkString = LinkString.concat(tableName).concat('.').concat(mapping[mappingKeys[i]].references.SQL_MAPPING.id.sqlName).concat('=').concat(mapping[mappingKeys[i]].references.TABLE_NAME).concat('.').concat(mapping[mappingKeys[i]].references.SQL_MAPPING.id.sqlName).concat(' AND ');
+        }
+    }
+    return LinkString.substr(0, LinkString.length - 5);
+};
 
 /**
  * Format a value according to its type
@@ -143,18 +172,32 @@ SQLUtils.formatManipulation = function (manipulationType, manipulationValue, map
 /**
  * Instantiate new object from the SQL rows
  * @param className
+ * @param mapping
  * @param rows
  */
-SQLUtils.createObjectsFromRow = function (className, rows) {
+SQLUtils.createObjectsFromRow = function (className, rows, mapping) {
     let objects = [];
     let classKeys = Object.keys(className.SQL_MAPPING);
-    for(let i = 0; i < rows.length; i++) {
-        objects.push(new arguments[0]());
-        for (let j = 0; j < classKeys.length; j++) {
-            objects[i][classKeys[j]] = rows[i][className.SQL_MAPPING[classKeys[j]].sqlName];
+    if(!mapping) {
+        for(let i = 0; i < rows.length; i++) {
+            objects.push(new arguments[0]());
+            for (let j = 0; j < classKeys.length; j++) {
+                objects[i][classKeys[j]] = rows[i][className.SQL_MAPPING[classKeys[j]].sqlName];
+            }
+        }
+    } else {
+        // If mapping, need to instantiate objects of referenced tables
+        for(let i = 0; i < rows.length; i++) {
+            objects.push(new arguments[0]());
+            for (let j = 0; j < classKeys.length; j++) {
+                // In case of reference, recursive call to build the object
+                if(mapping[classKeys[j]].references) {
+                    objects[i][classKeys[j]] = SQLUtils.createObjectsFromRow(mapping[classKeys[j]].references, [rows[i]])[0];
+                } else {
+                    objects[i][classKeys[j]] = rows[i][className.SQL_MAPPING[classKeys[j]].sqlName];
+                }
+            }
         }
     }
     return objects;
 };
-
-

@@ -2,6 +2,7 @@
  * Created by vroub on 12/11/2017.
  */
 const classToSql = require("../../src/main.js")
+const Profil = require("../models/Profil.js")
 
 module.exports = class Admin extends classToSql.sqlTable {
 
@@ -34,6 +35,10 @@ module.exports = class Admin extends classToSql.sqlTable {
             mailAdmin: {
                 sqlName: "mailAdmin",
                 type: "String"
+            },
+            profil: {
+                sqlName: "idProfil",
+                references: Profil
             }
         }
     };
@@ -42,13 +47,14 @@ module.exports = class Admin extends classToSql.sqlTable {
         return "MySQL";
     }
 
-    constructor(login, password, firstName, lastName, mailAdmin) {
+    constructor(login, password, firstName, lastName, mailAdmin, profil) {
         super();
         this.login = login;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.mailAdmin = mailAdmin;
+        this.profil = new Profil(profil);
     }
 
 };
