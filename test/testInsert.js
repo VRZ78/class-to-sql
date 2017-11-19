@@ -80,7 +80,9 @@ const findAndPopulate = function (condition, manipulation) {
     });
 };
 
-findAndPopulate();
+// findAndPopulate({id:{$gt:3}}, {limit: 1});
+findAndPopulate({profil: {id:{$gt:1}}}, {limit: 1});
+
 
 
 

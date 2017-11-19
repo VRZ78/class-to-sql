@@ -56,17 +56,28 @@ SQLUtils.getUpdateString = function (values, mapping) {
 
 /**
  * Build the WHERE string depending on the conditions
+ * @param tableName
  * @param mapping
  * @param condition
+ * @param trim
  */
-SQLUtils.getConditionString = function (mapping, condition) {
+SQLUtils.getConditionString = function (tableName, mapping, condition, trim) {
     let conditionString = '';
     let conditionsKeys = Object.keys(condition);
     for(let i = 0; i < conditionsKeys.length; i++) {
         let currentConditionKeys = Object.keys(condition[conditionsKeys[i]]);
-        conditionString = conditionString.concat(mapping[conditionsKeys[i]].sqlName).concat(" ").concat(SQLUtils.formatConditionSign(currentConditionKeys[0])).concat(" ").concat(condition[conditionsKeys[i]][currentConditionKeys[0]]).concat(" AND ");
+        // Handle referenced tables condition
+        if(currentConditionKeys[0].startsWith('$')){
+            conditionString = conditionString.concat(tableName).concat('.').concat(mapping[conditionsKeys[i]].sqlName).concat(" ").concat(SQLUtils.formatConditionSign(currentConditionKeys[0])).concat(" ").concat(condition[conditionsKeys[i]][currentConditionKeys[0]]).concat(" AND ");
+        } else {
+            conditionString = conditionString.concat(SQLUtils.getConditionString(mapping[conditionsKeys[i]].references.TABLE_NAME, mapping[conditionsKeys[i]].references.SQL_MAPPING, condition[conditionsKeys[i]]));
+        }
     }
-    return conditionString.substr(0, conditionString.length - 5);
+    if(trim) {
+        return conditionString.substr(0, conditionString.length - 5);
+    } else {
+        return conditionString;
+    }
 };
 
 /**

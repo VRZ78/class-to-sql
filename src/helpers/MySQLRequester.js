@@ -111,7 +111,7 @@ MySQLRequester.select = function (tableName, className, mapping, conditions, man
                 });
             } else {
                 // With condition
-                let conditionsString = SQLUtils.getConditionString(mapping, conditions);
+                let conditionsString = SQLUtils.getConditionString(tableName, mapping, conditions, true);
                 MySQLRequester.connection.query(`SELECT * FROM ${tableName} WHERE ${conditionsString} ${manipulationString};`, function (err, rows) {
                     if (err) {
                         reject(err);
@@ -144,7 +144,7 @@ MySQLRequester.selectCrossTable = function (tableName, className, mapping, condi
             }
             let conditionsString = '';
             if(conditions) {
-                conditionsString = SQLUtils.getConditionString(mapping, conditions);
+                conditionsString = SQLUtils.getConditionString(tableName, mapping, conditions, true);
             }
             let tableLinkString = SQLUtils.getTableLinkString(mapping, tableName);
             MySQLRequester.connection.query(`SELECT * FROM ${tableName}${tableString.length > 0 ? ',' + tableString : ''} WHERE ${tableLinkString} ${conditionsString ? 'AND' : '' } ${conditionsString} ${manipulationString};`, function (err, rows) {
