@@ -1,6 +1,6 @@
 const fs = require('fs');
-const sqlTable = require('./models/SQLTable.js');
-const MySQLRequester = require('./helpers/MySQLRequester.js');
+const sqlTable = require('./src/models/SQLTable.js');
+const MySQLRequester = require('./src/helpers/MySQLRequester.js');
 
 module.exports.sqlTable = sqlTable;
 module.exports.setConnection = function(connexion) {

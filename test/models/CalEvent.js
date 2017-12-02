@@ -1,7 +1,7 @@
 /**
  * Created by vroub on 13/11/2017.
  */
-const classToSql = require("../../src/index.js")
+const classToSql = require("../../index.js")
 
 module.exports = class CalEvent extends classToSql.sqlTable {
 
