@@ -68,7 +68,7 @@ SQLUtils.getConditionString = function (tableName, mapping, condition, trim) {
         let currentConditionKeys = Object.keys(condition[conditionsKeys[i]]);
         // Handle referenced tables condition
         if(currentConditionKeys[0].startsWith('$')){
-            conditionString = conditionString.concat(tableName).concat('.').concat(mapping[conditionsKeys[i]].sqlName).concat(" ").concat(SQLUtils.formatConditionSign(currentConditionKeys[0])).concat(" ").concat(condition[conditionsKeys[i]][currentConditionKeys[0]]).concat(" AND ");
+            conditionString = conditionString.concat(tableName).concat('.').concat(mapping[conditionsKeys[i]].sqlName).concat(" ").concat(SQLUtils.formatConditionSign(currentConditionKeys[0])).concat(" ").concat(mysql.escape(condition[conditionsKeys[i]][currentConditionKeys[0]])).concat(" AND ");
         } else {
             conditionString = conditionString.concat(SQLUtils.getConditionString(mapping[conditionsKeys[i]].references.TABLE_NAME, mapping[conditionsKeys[i]].references.SQL_MAPPING, condition[conditionsKeys[i]]));
         }
@@ -84,12 +84,13 @@ SQLUtils.getConditionString = function (tableName, mapping, condition, trim) {
  * Build limit and OrderBy
  * @param manipulations
  * @param mapping
+ * @param relatedTableName
  */
-SQLUtils.getManipulationString = function (manipulations, mapping) {
+SQLUtils.getManipulationString = function (manipulations, mapping, relatedTableName) {
     let manipulationString = '';
     let manipulationKeys = Object.keys(manipulations);
     for(let i = 0; i < manipulationKeys.length; i++) {
-        manipulationString = manipulationString.concat(SQLUtils.formatManipulation(manipulationKeys[i], manipulations[manipulationKeys[i]], mapping, Object.keys(mapping))).concat(" ");
+        manipulationString = manipulationString.concat(SQLUtils.formatManipulation(manipulationKeys[i], manipulations[manipulationKeys[i]], mapping, Object.keys(mapping), relatedTableName)).concat(" ");
     }
     return manipulationString;
 };
@@ -122,6 +123,18 @@ SQLUtils.getTableLinkString = function (mapping, tableName) {
         }
     }
     return LinkString.substr(0, LinkString.length - 5);
+};
+
+/**
+ * Build a string for an intermediate table that links two other tables
+ * @param intermediateTableName
+ * @param relationMapping
+ * @param mapping
+ * @param relationTableName
+ * @param tableName
+ */
+SQLUtils.getIntermediateString = function (intermediateTableName,relationTableName, relationMapping, tableName, mapping) {
+    return `${intermediateTableName}.${relationMapping.id.sqlName} = ${relationTableName}.${relationMapping.id.sqlName} AND ${intermediateTableName}.${mapping.id.sqlName} = ${tableName}.${mapping.id.sqlName}`
 };
 
 /**
@@ -170,11 +183,12 @@ SQLUtils.formatConditionSign = function (sign) {
  * @param manipulationValue
  * @param mapping
  * @param mappingKeys
+ * @param relationTableName
  */
-SQLUtils.formatManipulation = function (manipulationType, manipulationValue, mapping, mappingKeys) {
+SQLUtils.formatManipulation = function (manipulationType, manipulationValue, mapping, mappingKeys, relationTableName) {
     switch (manipulationType) {
         case "orderBy" :
-            return `ORDER BY ${mapping[manipulationValue.value].sqlName} ${manipulationValue.way}`;
+            return `ORDER BY ${relationTableName ? relationTableName + '.' : ''}${mapping[manipulationValue.value].sqlName} ${manipulationValue.way}`;
         case "limit" :
             return `LIMIT ${manipulationValue}`
     }

@@ -5,6 +5,7 @@ const mysql = require('mysql');
 const classToSql = require('../src/main.js');
 const CalEvent = require('./models/CalEvent.js');
 const Admin = require('./models/Admin.js');
+const Chauffeur = require("./models/Chauffeur.js");
 
 classToSql.setConnection(mysql.createConnection({
     host     : 'localhost',
@@ -69,7 +70,14 @@ const findAllConditionManipulation = function (condition, manipulations) {
     });
 };
 
-// findAllConditionManipulation({id: {$gt: 300}, heureDeb: {$eq: 16}},{orderBy: {value: "title", way: 'ASC'}, limit: 10});
+let startDate = new Date();
+console.log(startDate);
+
+findAll();
+
+findAllManipulation({orderBy: {value: "title", way: 'ASC'}, limit: 10});
+
+findAllConditionManipulation({id: {$gt: 300}, heureDeb: {$eq: 16}},{orderBy: {value: "title", way: 'ASC'}, limit: 10});
 
 
 const findAndPopulate = function (condition, manipulation) {
@@ -80,10 +88,19 @@ const findAndPopulate = function (condition, manipulation) {
     });
 };
 
-// findAndPopulate({id:{$gt:3}}, {limit: 1});
-findAndPopulate({profil: {id:{$gt:1}}}, {limit: 1});
+findAndPopulate({id:{$gt:3}}, {limit: 1});
+findAndPopulate({profil: {id:{$gt:1}}}, {orderBy:{value: "id", way: 'ASC'}});
 
+const findFromTable = function (intermediateTable, intermediateClass, conditions, manipulations) {
+    CalEvent.findFromTable(intermediateTable, intermediateClass, conditions, manipulations).then(function (calEvents) {
+        console.log(calEvents);
+        console.log(new Date() - startDate);
+    }, function (err) {
+        console.log(err);
+    })
+};
 
+findFromTable("chauffeur_and_evenement", Chauffeur, {id: {$eq: 2}}, {orderBy:{value: "id", way: 'ASC'}});
 
 
 

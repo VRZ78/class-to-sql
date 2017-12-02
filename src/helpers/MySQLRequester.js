@@ -99,7 +99,10 @@ MySQLRequester.select = function (tableName, className, mapping, conditions, man
         if (!MySQLRequester.connection) {
             reject(new Error("No MySQL connection set. Use setConnection first."));
         } else {
-            let manipulationString = SQLUtils.getManipulationString(manipulations, mapping);
+            let manipulationString = "";
+            if(manipulations) {
+                manipulationString = SQLUtils.getManipulationString(manipulations, mapping);
+            }
             if (!conditions) {
                 // Without conditions
                 MySQLRequester.connection.query(`SELECT * FROM ${tableName} ${manipulationString};`, function (err, rows) {
@@ -157,3 +160,43 @@ MySQLRequester.selectCrossTable = function (tableName, className, mapping, condi
         }
     })
 };
+
+/**
+ * Perform a select on a table linking other tables
+ * @param intermediateTableName
+ * @param relationTableName
+ * @param relationMapping
+ * @param tableName
+ * @param className
+ * @param mapping
+ * @param conditions
+ * @param manipulations
+ */
+MySQLRequester.selectIntermediateTable = function (intermediateTableName, relationTableName, relationMapping, tableName, className, mapping, conditions, manipulations) {
+    return new Promise(function (resolve, reject) {
+        if (!MySQLRequester.connection) {
+            reject(new Error("No MySQL connection set. Use setConnection first."));
+        } else {
+            let tableString = SQLUtils.getTableString(mapping);
+            let manipulationString = '';
+            if (manipulations) {
+                manipulationString = SQLUtils.getManipulationString(manipulations, mapping, intermediateTableName);
+            }
+            let conditionsString = '';
+            if(conditions) {
+                conditionsString = SQLUtils.getConditionString(intermediateTableName, relationMapping, conditions, true);
+            }
+            let tableLinkString = SQLUtils.getTableLinkString(mapping, tableName);
+            let intermediateString = SQLUtils.getIntermediateString(intermediateTableName, relationTableName, relationMapping, tableName, mapping);
+            MySQLRequester.connection.query(`SELECT * FROM ${tableName},${intermediateTableName},${relationTableName}${tableString.length > 0 ? ',' + tableString : ''} WHERE ${intermediateString} ${tableLinkString ? 'AND' : '' } ${tableLinkString} ${conditionsString ? 'AND' : '' } ${conditionsString} ${manipulationString};`, function (err, rows) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(SQLUtils.createObjectsFromRow(className, rows, mapping));
+                }
+            });
+        }
+    })
+};
+
+

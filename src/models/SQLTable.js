@@ -96,4 +96,25 @@ module.exports = class SQLTable {
             })
         })
     }
+
+    /**
+     * Find instances from a table which link this class and another class
+     * @param intermediateTableName
+     * @param relationClass
+     * @param conditions
+     * @param manipulations
+     * @returns {Promise}
+     */
+    static findFromTable(intermediateTableName, relationClass, conditions, manipulations) {
+        return new Promise((resolve, reject) => {
+            require("../helpers/" + this.DB_TYPE + "Requester.js").selectIntermediateTable(intermediateTableName, relationClass.TABLE_NAME, relationClass.SQL_MAPPING, this.TABLE_NAME, this, this.SQL_MAPPING, conditions, manipulations).then((rows) => {
+                this.id = rows.insertId;
+                resolve(rows);
+            }, function (err) {
+                reject(err);
+            })
+        })
+    }
+
+
 };
