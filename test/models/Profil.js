@@ -1,7 +1,7 @@
 /**
  * Created by vroub on 12/11/2017.
  */
-const classToSql = require("../../src/main.js")
+const classToSql = require("../../src/index.js")
 
 module.exports = class Profil extends classToSql.sqlTable {
 

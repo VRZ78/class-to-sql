@@ -2,7 +2,7 @@
  * Created by vroub on 12/11/2017.
  */
 const mysql = require('mysql');
-const classToSql = require('../src/main.js');
+const classToSql = require('../src/index.js');
 const CalEvent = require('./models/CalEvent.js');
 const Admin = require('./models/Admin.js');
 const Chauffeur = require("./models/Chauffeur.js");
