@@ -37,6 +37,31 @@ MySQLRequester.insert = function (tableName, values, mapping) {
 };
 
 /**
+ * Insert data in a table linking two other tables
+ * @param id
+ * @param mapping: The value to insert
+ * @param intermediateTableName
+ * @param linkId
+ * @param secondMapping
+ * @returns {Promise}
+ */
+MySQLRequester.insertLink = function (id, mapping, intermediateTableName, linkId, linkMapping) {
+    return new Promise(function (resolve, reject) {
+        if (!MySQLRequester.connection) {
+            reject(new Error("No MySQL connection set. Use setConnection first."));
+        } else {
+            MySQLRequester.connection.query(`INSERT INTO ${intermediateTableName} (${mapping.id.sqlName},${linkMapping.id.sqlName}) VALUES (${id}, ${linkId});`, function (err, rows) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            })
+        }
+    })
+};
+
+/**
  * Update a row in the given table
  * @param tableName : name as in the DB
  * @param values: The value to insert

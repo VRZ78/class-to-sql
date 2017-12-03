@@ -54,7 +54,7 @@ module.exports = class CalEvent extends classToSql.sqlTable {
         }
     };
 
-    static get DB_TYPE() {
+    static get DB_TYPE () {
         return "MySQL";
     }
 

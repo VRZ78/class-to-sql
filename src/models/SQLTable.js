@@ -12,7 +12,7 @@ module.exports = class SQLTable {
     /**
      * Create the table in the database
      */
-    create() {
+    static create() {
         return new Promise((resolve, reject) => {
 
         })
@@ -25,7 +25,7 @@ module.exports = class SQLTable {
      */
     save() {
         return new Promise((resolve, reject) => {
-            require("../helpers/" + this.DB_TYPE + "Requester.js").insert(this.TABLE_NAME, this, this.SQL_MAPPING).then((rows) => {
+            require("../helpers/" + this.constructor.DB_TYPE + "Requester.js").insert(this.constructor.TABLE_NAME, this, this.constructor.SQL_MAPPING).then((rows) => {
                 this.id = rows.insertId;
                 resolve(rows);
             }, function (err) {
@@ -35,12 +35,24 @@ module.exports = class SQLTable {
     };
 
     /**
+     * Link this class and another class in an intermediate table
+     */
+    linkTo(instance, intermediateTableName) {
+        return new Promise((resolve, reject) => {
+            require("../helpers/" + this.constructor.DB_TYPE + "Requester.js").insertLink(this.id, this.constructor.SQL_MAPPING, intermediateTableName, instance.id, instance.constructor.SQL_MAPPING).then((rows) => {
+                resolve(rows);
+            }, function (err) {
+                reject(err);
+            })
+        });
+    };
+
+    /**
      * Update the instance.
      */
     update() {
         return new Promise((resolve, reject) => {
-            require("../helpers/" + this.DB_TYPE + "Requester.js").update(this.TABLE_NAME, this, this.SQL_MAPPING).then((rows) => {
-                this.id = rows.insertId;
+            require("../helpers/" + this.constructor.DB_TYPE + "Requester.js").update(this.constructor.TABLE_NAME, this, this.constructor.SQL_MAPPING).then((rows) => {
                 resolve(rows);
             }, function (err) {
                 reject(err);
@@ -60,8 +72,7 @@ module.exports = class SQLTable {
      */
     remove() {
         return new Promise((resolve, reject) => {
-            require("../helpers/" + this.DB_TYPE + "Requester.js").delete(this.TABLE_NAME, this.id, this.SQL_MAPPING.id.sqlName).then((rows) => {
-                this.id = rows.insertId;
+            require("../helpers/" + this.constructor.DB_TYPE + "Requester.js").delete(this.constructor.TABLE_NAME, this.id, this.constructor.SQL_MAPPING.id.sqlName).then((rows) => {
                 resolve(rows);
             }, function (err) {
                 reject(err);
@@ -75,7 +86,6 @@ module.exports = class SQLTable {
     static find(conditions, manipulations) {
         return new Promise((resolve, reject) => {
             require("../helpers/" + this.DB_TYPE + "Requester.js").select(this.TABLE_NAME, this, this.SQL_MAPPING, conditions, manipulations).then((rows) => {
-                this.id = rows.insertId;
                 resolve(rows);
             }, function (err) {
                 reject(err);
@@ -89,7 +99,6 @@ module.exports = class SQLTable {
     static findAndPopulate(conditions, manipulations) {
         return new Promise((resolve, reject) => {
             require("../helpers/" + this.DB_TYPE + "Requester.js").selectCrossTable(this.TABLE_NAME, this, this.SQL_MAPPING, conditions, manipulations).then((rows) => {
-                this.id = rows.insertId;
                 resolve(rows);
             }, function (err) {
                 reject(err);
@@ -108,7 +117,6 @@ module.exports = class SQLTable {
     static findFromTable(intermediateTableName, relationClass, conditions, manipulations) {
         return new Promise((resolve, reject) => {
             require("../helpers/" + this.DB_TYPE + "Requester.js").selectIntermediateTable(intermediateTableName, relationClass.TABLE_NAME, relationClass.SQL_MAPPING, this.TABLE_NAME, this, this.SQL_MAPPING, conditions, manipulations).then((rows) => {
-                this.id = rows.insertId;
                 resolve(rows);
             }, function (err) {
                 reject(err);
