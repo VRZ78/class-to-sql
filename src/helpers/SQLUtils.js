@@ -143,7 +143,7 @@ SQLUtils.getIntermediateString = function (intermediateTableName,relationTableNa
  * @param type
  */
 SQLUtils.formatValue = function(value, type) {
-        if(value) {
+        if(value !== undefined && value !== null) {
             switch(type) {
                 case "String" :
                     return String(value);
