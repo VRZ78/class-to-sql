@@ -31,7 +31,7 @@ SQLUtils.getValuesFromMapping = function (values, mapping, ignoreId) {
     let mappingKeys = Object.keys(mapping);
     for(let i = 0; i < mappingKeys.length; i++) {
         if(ignoreId && mappingKeys[i] !== "id") {
-            valuesString = valuesString.concat(mysql.escape(SQLUtils.formatValue(mapping[mappingKeys[i]].references ? values[mappingKeys[i]].id : values[mappingKeys[i]], mapping[mappingKeys[i]].references && values[mappingKeys[i]].SQL_MAPPING() && values[mappingKeys[i]].SQL_MAPPING().id && values[mappingKeys[i]].SQL_MAPPING().id.type ? values[mappingKeys[i]].SQL_MAPPING().id.type : mapping[mappingKeys[i]].type))).concat(',');
+            valuesString = valuesString.concat(mysql.escape(SQLUtils.formatValue(mapping[mappingKeys[i]].references ? values[mappingKeys[i]].id : values[mappingKeys[i]], mapping[mappingKeys[i]].references && values[mappingKeys[i]].SQL_MAPPING() && values[mappingKeys[i]].SQL_MAPPING().id && values[mappingKeys[i]].SQL_MAPPING().id.type ? values[mappingKeys[i]].SQL_MAPPING.id.type : mapping[mappingKeys[i]].type))).concat(',');
         }
     }
     return valuesString.substr(0, valuesString.length - 1);
