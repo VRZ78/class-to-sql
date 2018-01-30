@@ -7,6 +7,7 @@ const CalEvent = require('./models/CalEvent.js');
 const Admin = require('./models/Admin.js');
 const Chauffeur = require("./models/Chauffeur.js");
 
+classToSql.setDBEngine("MySQL");
 classToSql.setConnection(mysql.createConnection({
     host: 'localhost',
     user: 'root',

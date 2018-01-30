@@ -1,12 +1,11 @@
 /**
  * Created by vroub on 12/11/2017.
  */
-const MySQLRequester = require('../helpers/MySQLRequester');
+const index = require('../../index.js')
 
 module.exports = class SQLTable {
 
     constructor() {
-
     }
 
     /**
@@ -25,7 +24,7 @@ module.exports = class SQLTable {
      */
     save() {
         return new Promise((resolve, reject) => {
-            require("../helpers/" + this.constructor.DB_TYPE + "Requester.js").insert(this.constructor.TABLE_NAME, this, this.constructor.SQL_MAPPING).then((rows) => {
+            require("../helpers/" + index.getDBEngine() + "Requester.js").insert(this.constructor.TABLE_NAME, this, this.constructor.SQL_MAPPING).then((rows) => {
                 this.id = rows.insertId;
                 resolve(rows);
             }, function (err) {
@@ -39,7 +38,7 @@ module.exports = class SQLTable {
      */
     linkTo(instance, intermediateTableName) {
         return new Promise((resolve, reject) => {
-            require("../helpers/" + this.constructor.DB_TYPE + "Requester.js").insertLink(this.id, this.constructor.SQL_MAPPING, intermediateTableName, instance.id, instance.constructor.SQL_MAPPING).then((rows) => {
+            require("../helpers/" + index.getDBEngine() + "Requester.js").insertLink(this.id, this.constructor.SQL_MAPPING, intermediateTableName, instance.id, instance.constructor.SQL_MAPPING).then((rows) => {
                 resolve(rows);
             }, function (err) {
                 reject(err);
@@ -52,7 +51,7 @@ module.exports = class SQLTable {
      */
     update() {
         return new Promise((resolve, reject) => {
-            require("../helpers/" + this.constructor.DB_TYPE + "Requester.js").update(this.constructor.TABLE_NAME, this, this.constructor.SQL_MAPPING).then((rows) => {
+            require("../helpers/" + index.getDBEngine() + "Requester.js").update(this.constructor.TABLE_NAME, this, this.constructor.SQL_MAPPING).then((rows) => {
                 resolve(rows);
             }, function (err) {
                 reject(err);
@@ -72,7 +71,7 @@ module.exports = class SQLTable {
      */
     remove() {
         return new Promise((resolve, reject) => {
-            require("../helpers/" + this.constructor.DB_TYPE + "Requester.js").delete(this.constructor.TABLE_NAME, this.id, this.constructor.SQL_MAPPING.id.sqlName).then((rows) => {
+            require("../helpers/" + index.getDBEngine() + "Requester.js").delete(this.constructor.TABLE_NAME, this.id, this.constructor.SQL_MAPPING.id.sqlName).then((rows) => {
                 resolve(rows);
             }, function (err) {
                 reject(err);
@@ -85,7 +84,7 @@ module.exports = class SQLTable {
      */
     static find(conditions, manipulations) {
         return new Promise((resolve, reject) => {
-            require("../helpers/" + this.DB_TYPE + "Requester.js").select(this.TABLE_NAME, this, this.SQL_MAPPING, conditions, manipulations).then((rows) => {
+            require("../helpers/" + index.getDBEngine() + "Requester.js").select(this.TABLE_NAME, this, this.SQL_MAPPING, conditions, manipulations).then((rows) => {
                 resolve(rows);
             }, function (err) {
                 reject(err);
@@ -98,7 +97,7 @@ module.exports = class SQLTable {
      */
     static findAndPopulate(conditions, manipulations) {
         return new Promise((resolve, reject) => {
-            require("../helpers/" + this.DB_TYPE + "Requester.js").selectCrossTable(this.TABLE_NAME, this, this.SQL_MAPPING, conditions, manipulations).then((rows) => {
+            require("../helpers/" + index.getDBEngine() + "Requester.js").selectCrossTable(this.TABLE_NAME, this, this.SQL_MAPPING, conditions, manipulations).then((rows) => {
                 resolve(rows);
             }, function (err) {
                 reject(err);
@@ -116,7 +115,7 @@ module.exports = class SQLTable {
      */
     static findFromTable(intermediateTableName, relationClass, conditions, manipulations) {
         return new Promise((resolve, reject) => {
-            require("../helpers/" + this.DB_TYPE + "Requester.js").selectIntermediateTable(intermediateTableName, relationClass.TABLE_NAME, relationClass.SQL_MAPPING, this.TABLE_NAME, this, this.SQL_MAPPING, conditions, manipulations).then((rows) => {
+            require("../helpers/" + index.getDBEngine() + "Requester.js").selectIntermediateTable(intermediateTableName, relationClass.TABLE_NAME, relationClass.SQL_MAPPING, this.TABLE_NAME, this, this.SQL_MAPPING, conditions, manipulations).then((rows) => {
                 resolve(rows);
             }, function (err) {
                 reject(err);
