@@ -143,16 +143,21 @@ SQLUtils.getIntermediateString = function (intermediateTableName,relationTableNa
  * @param type
  */
 SQLUtils.formatValue = function(value, type) {
-        switch(type) {
-            case "String" :
-                return String(value);
-            case "Number" :
-                return Number(value);
-            case "Date" :
-                return new Date(value);
-            case "Time" :
-                return String(value);
+        if(value) {
+            switch(type) {
+                case "String" :
+                    return String(value);
+                case "Number" :
+                    return Number(value);
+                case "Date" :
+                    return new Date(value);
+                case "Time" :
+                    return String(value);
+            }
+        } else {
+            return null;
         }
+
 };
 
 /**
