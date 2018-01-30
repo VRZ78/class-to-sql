@@ -123,7 +123,7 @@ const linkTo = function () {
         let singleChauffeur;
         Chauffeur.find({id: {$eq: 2}}).then(function (chauffeur) {
             singleChauffeur = chauffeur[0];
-            newEvent.linkTo(singleChauffeur, 'chauffeur_and_evenement').then(function () {
+            newEvent.linkTo(singleChauffeur, 'chauffeur_and_evenement', "idEv", "idCh").then(function () {
                 console.log('event successfully linked to a chauffeur')
                 resolve();
             }, function (err) {
