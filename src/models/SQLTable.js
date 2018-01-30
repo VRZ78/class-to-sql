@@ -62,8 +62,14 @@ module.exports = class SQLTable {
     /**
      * Update several instances based on condition
      */
-    static update(values, condition) {
-
+    static update(values, conditions) {
+        return new Promise((resolve, reject) => {
+            require("../helpers/" + index.getDBEngine() + "Requester.js").updateTable(this.TABLE_NAME, values, this.SQL_MAPPING, conditions).then((rows) => {
+                resolve(rows);
+            }, function (err) {
+                reject(err);
+            })
+        })
     }
 
     /**

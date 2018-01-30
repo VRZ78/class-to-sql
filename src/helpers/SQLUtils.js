@@ -46,7 +46,7 @@ SQLUtils.getUpdateString = function (values, mapping) {
     let updateString = '';
     let mappingKeys = Object.keys(mapping);
     for(let i = 0; i < mappingKeys.length; i++) {
-        if(mappingKeys[i] !== "id") {
+        if(mappingKeys[i] !== "id" && values[mappingKeys[i]]) {
             updateString = updateString.concat(mapping[mappingKeys[i]].sqlName).concat(" = ");
             updateString = updateString.concat(mysql.escape(SQLUtils.formatValue(values[mappingKeys[i]], mapping[mappingKeys[i]].type))).concat(', ');
         }

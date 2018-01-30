@@ -12,7 +12,7 @@ classToSql.setConnection(mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: '',
-    database: 'belair'
+    database: 'belair_calendrier'
 }));
 
 // Insert with dates
@@ -137,6 +137,16 @@ const linkTo = function () {
     });
 };
 
+const updateTable = function (values, condition) {
+    return new Promise(function (resolve, reject) {
+        Chauffeur.update(values, condition).then(function () {
+            resolve()
+        }, function (err) {
+            reject(err);
+        });
+    })
+};
+
 let startDate = new Date();
 
 findAll().then(function () {
@@ -164,9 +174,13 @@ findAll().then(function () {
                             }).then(function () {
                                 linkTo().then(function () {
                                     remove().then(function () {
-                                        findAll().then(function () {
-                                            console.log("----------------------------------------------");
-                                            console.log("Done in " + (new Date() - startDate) + " ms");
+                                        updateTable({firstName : "Jean"},{id : {$eq : 4}}).then(function () {
+                                            findAll().then(function () {
+                                                console.log("----------------------------------------------");
+                                                console.log("Done in " + (new Date() - startDate) + " ms");
+                                            }, function (err) {
+                                                console.log(err);
+                                            })
                                         }, function (err) {
                                             console.log(err);
                                         })

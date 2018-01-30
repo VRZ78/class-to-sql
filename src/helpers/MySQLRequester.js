@@ -90,6 +90,31 @@ MySQLRequester.update = function (tableName, values, mapping, conditions) {
 };
 
 /**
+ * Update a table according to the values and conditions
+ * @param tableName
+ * @param values
+ * @param mapping
+ * @param conditions
+ */
+MySQLRequester.updateTable = function (tableName, values, mapping, conditions) {
+    return new Promise(function (resolve, reject) {
+        if (!MySQLRequester.connection) {
+            reject(new Error("No MySQL connection set. Use setConnection first."));
+        } else {
+            let updateString = SQLUtils.getUpdateString(values, mapping);
+            let conditionsString = SQLUtils.getConditionString(tableName, mapping, conditions, true);
+            MySQLRequester.connection.query(`UPDATE ${tableName} SET ${updateString} WHERE ${conditionsString};`, function (err, rows) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            })
+        }
+    });
+};
+
+/**
  * Delete a row from a table
  * @param tableName: Name of the table
  * @param id: ID of the object
