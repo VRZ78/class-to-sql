@@ -50,7 +50,32 @@ MySQLRequester.insertLink = function (id, linkId, intermediateTableName, fieldNa
         if (!MySQLRequester.connection) {
             reject(new Error("No MySQL connection set. Use setConnection first."));
         } else {
-            MySQLRequester.connection.query(`INSERT INTO ${intermediateTableName} (${fieldName},${linkFieldName}) VALUES (${id}, ${linkId});`, function (err, rows) {
+            MySQLRequester.connection.query(`INSERT INTO ${intermediateTableName} (${fieldName},${linkFieldName}) VALUES (${mysql.escape(id)}, ${mysql.escape(linkId)});`, function (err, rows) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            })
+        }
+    })
+};
+
+/**
+ * Delete data in a table linking two other tables
+ * @param id
+ * @param intermediateTableName
+ * @param linkId
+ * @param fieldName
+ * @param linkFieldName
+ * @returns {Promise}
+ */
+MySQLRequester.deleteLink = function (id, linkId, intermediateTableName, fieldName, linkFieldName) {
+    return new Promise(function (resolve, reject) {
+        if (!MySQLRequester.connection) {
+            reject(new Error("No MySQL connection set. Use setConnection first."));
+        } else {
+            MySQLRequester.connection.query(`DELETE FROM ${intermediateTableName} WHERE ${fieldName} = ${mysql.escape(id)} AND ${linkFieldName} = ${mysql.escape(linkId)};`, function (err, rows) {
                 if (err) {
                     reject(err);
                 } else {

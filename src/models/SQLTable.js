@@ -86,6 +86,19 @@ module.exports = class SQLTable {
     };
 
     /**
+     * Remove Link from this class with another class in an intermediate table
+     */
+    removeLink(instance, intermediateTableName, fieldName, instanceFieldName) {
+        return new Promise((resolve, reject) => {
+            require("../helpers/" + index.getDBEngine() + "Requester.js").deleteLink(this.id, instance.id, intermediateTableName, fieldName, instanceFieldName).then(() => {
+                resolve();
+            }, function (err) {
+                reject(err);
+            })
+        });
+    };
+
+    /**
      * Return specific instances according to params
      */
     static find(conditions, manipulations) {

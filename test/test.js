@@ -137,6 +137,26 @@ const linkTo = function () {
     });
 };
 
+const removeLink = function () {
+    return new Promise((resolve, reject) => {
+
+        let singleChauffeur;
+        Chauffeur.find({id: {$eq: 2}}).then(function (chauffeur) {
+            singleChauffeur = chauffeur[0];
+            newEvent.removeLink(singleChauffeur, 'chauffeur_and_evenement', "idEv", "idCh").then(function () {
+                console.log('successfully removed linked from an event to a chauffeur');
+                resolve();
+            }, function (err) {
+                console.log(err);
+                reject();
+            })
+        }, function (err) {
+            console.log(err);
+            reject();
+        })
+    });
+}
+
 const updateTable = function (values, condition) {
     return new Promise(function (resolve, reject) {
         Chauffeur.update(values, condition).then(function () {
@@ -173,11 +193,15 @@ findAll().then(function () {
                                 }
                             }).then(function () {
                                 linkTo().then(function () {
-                                    remove().then(function () {
-                                        updateTable({firstName : "Jean"},{id : {$eq : 4}}).then(function () {
-                                            findAll().then(function () {
-                                                console.log("----------------------------------------------");
-                                                console.log("Done in " + (new Date() - startDate) + " ms");
+                                    removeLink().then(function () {
+                                        remove().then(function () {
+                                            updateTable({firstName : "Jean"},{id : {$eq : 4}}).then(function () {
+                                                findAll().then(function () {
+                                                    console.log("----------------------------------------------");
+                                                    console.log("Done in " + (new Date() - startDate) + " ms");
+                                                }, function (err) {
+                                                    console.log(err);
+                                                })
                                             }, function (err) {
                                                 console.log(err);
                                             })
