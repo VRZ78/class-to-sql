@@ -247,9 +247,11 @@ MySQLRequester.selectCrossTable = function (tableName, className, mapping, condi
  * @param className
  * @param mapping
  * @param conditions
+ * @param conditionsRemote
+ * @param conditionsLink
  * @param manipulations
  */
-MySQLRequester.selectIntermediateTable = function (intermediateTableName, fieldName, linkFieldName, relationTableName, relationMapping, tableName, className, mapping, conditions, manipulations) {
+MySQLRequester.selectIntermediateTable = function (intermediateTableName, fieldName, linkFieldName, relationTableName, relationMapping, tableName, className, mapping, conditions, conditionsRemote, conditionsLink, manipulations) {
     return new Promise(function (resolve, reject) {
         if (!MySQLRequester.connection) {
             reject(new Error("No MySQL connection set. Use setConnection first."));
@@ -260,8 +262,11 @@ MySQLRequester.selectIntermediateTable = function (intermediateTableName, fieldN
                 manipulationString = SQLUtils.getManipulationString(manipulations, mapping, tableName);
             }
             let conditionsString = '';
+            if(conditionsRemote) {
+                conditionsString = conditionsString + SQLUtils.getConditionString(tableName, mapping, conditions, true);
+            }
             if(conditions) {
-                conditionsString = SQLUtils.getConditionString(relationTableName, relationMapping, conditions, true);
+                conditionsString = conditionsString + " AND " + SQLUtils.getConditionString(relationTableName, relationMapping, conditionsRemote, true);
             }
             let tableLinkString = SQLUtils.getTableLinkString(mapping, tableName);
             let intermediateString = SQLUtils.getIntermediateString(intermediateTableName, fieldName, linkFieldName, relationTableName, relationMapping, tableName, mapping);
