@@ -48,7 +48,7 @@ SQLUtils.getUpdateString = function (values, mapping) {
     for(let i = 0; i < mappingKeys.length; i++) {
         if(mappingKeys[i] !== "id" && values[mappingKeys[i]]) {
             updateString = updateString.concat(mapping[mappingKeys[i]].sqlName).concat(" = ");
-            updateString = updateString.concat(mysql.escape(SQLUtils.formatValue(values[mappingKeys[i]], mapping[mappingKeys[i]].type))).concat(', ');
+            updateString = updateString.concat(mysql.escape(SQLUtils.formatValue(mapping[mappingKeys[i]].references ? values[mappingKeys[i]].id : values[mappingKeys[i]], mapping[mappingKeys[i]].references && values[mappingKeys[i]].constructor && values[mappingKeys[i]].constructor.SQL_MAPPING && values[mappingKeys[i]].constructor.SQL_MAPPING.id && values[mappingKeys[i]].constructor.SQL_MAPPING.id.type ? values[mappingKeys[i]].constructor.SQL_MAPPING.id.type : mapping[mappingKeys[i]].type))).concat(', ');
         }
     }
     return updateString.substr(0, updateString.length - 2);
