@@ -15,7 +15,7 @@ MySQLRequester.setConnection = function (connection) {
  * Insert a row in the given table
  * @param tableName : name as in the DB
  * @param values: The value to insert
- * @param mapping: The value to insert
+ * @param mapping: The description of the table
  * @returns {Promise}
  */
 MySQLRequester.insert = function (tableName, values, mapping) {
@@ -38,11 +38,11 @@ MySQLRequester.insert = function (tableName, values, mapping) {
 
 /**
  * Insert data in a table linking two other tables
- * @param id
- * @param intermediateTableName
- * @param linkId
- * @param fieldName
- * @param linkFieldName
+ * @param id The id of the element from the first table
+ * @param linkId The id of the element from the second table
+ * @param intermediateTableName Name of the table used to link the two elements
+ * @param fieldName Name of the id field of the intermediate table for the first element
+ * @param linkFieldName Name of the id field of the intermediate table for the second element
  * @returns {Promise}
  */
 MySQLRequester.insertLink = function (id, linkId, intermediateTableName, fieldName, linkFieldName) {
@@ -63,11 +63,11 @@ MySQLRequester.insertLink = function (id, linkId, intermediateTableName, fieldNa
 
 /**
  * Delete data in a table linking two other tables
- * @param id
- * @param intermediateTableName
- * @param linkId
- * @param fieldName
- * @param linkFieldName
+ * @param id The id of the element from the first table
+ * @param linkId The id of the element from the second table
+ * @param intermediateTableName Name of the table used to link the two elements
+ * @param fieldName Name of the id field of the intermediate table for the first element
+ * @param linkFieldName Name of the id field of the intermediate table for the second element
  * @returns {Promise}
  */
 MySQLRequester.deleteLink = function (id, linkId, intermediateTableName, fieldName, linkFieldName) {
@@ -89,8 +89,8 @@ MySQLRequester.deleteLink = function (id, linkId, intermediateTableName, fieldNa
 /**
  * Update a row in the given table
  * @param tableName : name as in the DB
- * @param values: The value to insert
- * @param mapping: The value to insert
+ * @param values: The value to update
+ * @param mapping: The description of the table
  * @param conditions: Condition on what to insert
  * @returns {Promise}
  */
@@ -116,10 +116,10 @@ MySQLRequester.update = function (tableName, values, mapping, conditions) {
 
 /**
  * Update a table according to the values and conditions
- * @param tableName
- * @param values
- * @param mapping
- * @param conditions
+ * @param tableName : name as in the DB
+ * @param values: The value to update
+ * @param mapping: The description of the table
+ * @param conditions: Condition on what to insert
  */
 MySQLRequester.updateTable = function (tableName, values, mapping, conditions) {
     return new Promise(function (resolve, reject) {
@@ -163,11 +163,11 @@ MySQLRequester.delete = function (tableName, id, fieldName) {
 
 /**
  * Perform a select on a table. If no conditions are passed, select *
- * @param tableName
- * @param className
- * @param mapping
- * @param conditions
- * @param manipulations
+ * @param tableName Name of the table
+ * @param className Constructor of the class to instantiate after the query
+ * @param mapping Description of the table
+ * @param conditions Conditions for the WHERE clause
+ * @param manipulations Manipulation of the query result
  */
 MySQLRequester.select = function (tableName, className, mapping, conditions, manipulations) {
     return new Promise(function (resolve, reject) {
@@ -203,12 +203,12 @@ MySQLRequester.select = function (tableName, className, mapping, conditions, man
 };
 
 /**
- * Perform a select on different tables and populate each one. If no conditions are passed, select *
- * @param tableName
- * @param className
- * @param mapping
- * @param conditions
- * @param manipulations
+ * Perform a select on different tables and populate attributes that reference other tables. If no conditions are passed, select *
+ * @param tableName Name of the table
+ * @param className Constructor of the class to instantiate after the query
+ * @param mapping Description of the table
+ * @param conditions Conditions for the WHERE clause
+ * @param manipulations Manipulation of the query result
  */
 MySQLRequester.selectCrossTable = function (tableName, className, mapping, conditions, manipulations) {
     return new Promise(function (resolve, reject) {
@@ -238,18 +238,18 @@ MySQLRequester.selectCrossTable = function (tableName, className, mapping, condi
 
 /**
  * Perform a select on a table linking other tables
- * @param intermediateTableName
- * @param fieldName
- * @param linkFieldName
- * @param relationTableName
- * @param relationMapping
- * @param tableName
- * @param className
- * @param mapping
- * @param conditions
- * @param conditionsRemote
- * @param conditionsLink
- * @param manipulations
+ * @param intermediateTableName Name of the table that links the other tables
+ * @param fieldName Name of the id field of the intermediate table for the first element
+ * @param linkFieldName Name of the id field of the intermediate table for the second element
+ * @param tableName Name of the first table
+ * @param mapping Description of the first table
+ * @param relationTableName Name of the second table
+ * @param relationMapping Description of the second table
+ * @param className Constructor of the class to instantiate after the request
+ * @param conditions Conditions related to the first table
+ * @param conditionsRemote Conditions related to the second table
+ * @param conditionsLink Condition related to the linking table - TODO : Implement
+ * @param manipulations Manipulation for the query
  */
 MySQLRequester.selectIntermediateTable = function (intermediateTableName, fieldName, linkFieldName, relationTableName, relationMapping, tableName, className, mapping, conditions, conditionsRemote, conditionsLink, manipulations) {
     return new Promise(function (resolve, reject) {
