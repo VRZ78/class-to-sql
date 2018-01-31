@@ -128,13 +128,15 @@ module.exports = class SQLTable {
      * Find instances from a table which link this class and another class
      * @param intermediateTableName
      * @param relationClass
+     * @param fieldName
+     * @param linkFieldName
      * @param conditions
      * @param manipulations
      * @returns {Promise}
      */
-    static findFromTable(intermediateTableName, relationClass, conditions, manipulations) {
+    static findFromTable(intermediateTableName, relationClass, fieldName, linkFieldName, conditions, manipulations) {
         return new Promise((resolve, reject) => {
-            require("../helpers/" + index.getDBEngine() + "Requester.js").selectIntermediateTable(intermediateTableName, relationClass.TABLE_NAME, relationClass.SQL_MAPPING, this.TABLE_NAME, this, this.SQL_MAPPING, conditions, manipulations).then((rows) => {
+            require("../helpers/" + index.getDBEngine() + "Requester.js").selectIntermediateTable(intermediateTableName, fieldName, linkFieldName, relationClass.TABLE_NAME, relationClass.SQL_MAPPING, this.TABLE_NAME, this, this.SQL_MAPPING, conditions, manipulations).then((rows) => {
                 resolve(rows);
             }, function (err) {
                 reject(err);

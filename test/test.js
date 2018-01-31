@@ -105,9 +105,9 @@ const findAndPopulate = function (condition, manipulation) {
     });
 };
 
-const findFromTable = function (intermediateTable, intermediateClass, conditions, manipulations) {
+const findFromTable = function (intermediateTable, intermediateClass, fieldName, linkFieldName, conditions, manipulations) {
     return new Promise((resolve, reject) => {
-        CalEvent.findFromTable(intermediateTable, intermediateClass, conditions, manipulations).then(function (calEvents) {
+        CalEvent.findFromTable(intermediateTable, intermediateClass, fieldName, linkFieldName, conditions, manipulations).then(function (calEvents) {
             console.log('Found ' + calEvents.length + ' events with conditions from another table ' + conditions + ' and manipulation ' + manipulations)
             resolve();
         }, function (err) {
@@ -186,7 +186,7 @@ findAll().then(function () {
                                 way: 'ASC'
                             }
                         }).then(function () {
-                            findFromTable("chauffeur_and_evenement", Chauffeur, {id: {$eq: 2}}, {
+                            findFromTable("chauffeur_and_evenement", Chauffeur, "idEv", "idCh", {id: {$eq: 2}}, {
                                 orderBy: {
                                     value: "id",
                                     way: 'ASC'

@@ -128,13 +128,15 @@ SQLUtils.getTableLinkString = function (mapping, tableName) {
 /**
  * Build a string for an intermediate table that links two other tables
  * @param intermediateTableName
+ * @param fieldName
+ * @param linkFieldName
  * @param relationMapping
  * @param mapping
  * @param relationTableName
  * @param tableName
  */
-SQLUtils.getIntermediateString = function (intermediateTableName,relationTableName, relationMapping, tableName, mapping) {
-    return `${intermediateTableName}.${relationMapping.id.sqlName} = ${relationTableName}.${relationMapping.id.sqlName} AND ${intermediateTableName}.${mapping.id.sqlName} = ${tableName}.${mapping.id.sqlName}`
+SQLUtils.getIntermediateString = function (intermediateTableName, fieldName, linkFieldName ,relationTableName, relationMapping, tableName, mapping) {
+    return `${intermediateTableName}.${linkFieldName} = ${relationTableName}.${relationMapping.id.sqlName} AND ${intermediateTableName}.${fieldName} = ${tableName}.${mapping.id.sqlName}`
 };
 
 /**
