@@ -31,7 +31,7 @@ SQLUtils.getValuesFromMapping = function (values, mapping, ignoreId) {
     let mappingKeys = Object.keys(mapping);
     for(let i = 0; i < mappingKeys.length; i++) {
         if(ignoreId && mappingKeys[i] !== "id") {
-            valuesString = valuesString.concat(mysql.escape(SQLUtils.formatValue(mapping[mappingKeys[i]].references ? values[mappingKeys[i]].id : values[mappingKeys[i]], mapping[mappingKeys[i]].references && values[mappingKeys[i]].constructor && values[mappingKeys[i]].constructor.SQL_MAPPING && values[mappingKeys[i]].constructor.SQL_MAPPING.id && values[mappingKeys[i]].constructor.SQL_MAPPING.id.type ? values[mappingKeys[i]].constructor.SQL_MAPPING.id.type : mapping[mappingKeys[i]].type))).concat(',');
+            valuesString = valuesString.concat(mysql.escape(SQLUtils.formatValue(mapping[mappingKeys[i]].references && values[mappingKeys[i]] && values[mappingKeys[i]].id ? values[mappingKeys[i]].id : typeof values[mappingKeys[i]] === 'object' && values[mappingKeys[i]].constructor !== Date ? null : values[mappingKeys[i]] , mapping[mappingKeys[i]].references && values[mappingKeys[i]].constructor && values[mappingKeys[i]].constructor.SQL_MAPPING && values[mappingKeys[i]].constructor.SQL_MAPPING.id && values[mappingKeys[i]].constructor.SQL_MAPPING.id.type ? values[mappingKeys[i]].constructor.SQL_MAPPING.id.type : mapping[mappingKeys[i]].type))).concat(',');
         }
     }
     return valuesString.substr(0, valuesString.length - 1);
@@ -48,7 +48,7 @@ SQLUtils.getUpdateString = function (values, mapping) {
     for(let i = 0; i < mappingKeys.length; i++) {
         if(mappingKeys[i] !== "id" && values[mappingKeys[i]]) {
             updateString = updateString.concat(mapping[mappingKeys[i]].sqlName).concat(" = ");
-            updateString = updateString.concat(mysql.escape(SQLUtils.formatValue(mapping[mappingKeys[i]].references ? values[mappingKeys[i]].id : values[mappingKeys[i]], mapping[mappingKeys[i]].references && values[mappingKeys[i]].constructor && values[mappingKeys[i]].constructor.SQL_MAPPING && values[mappingKeys[i]].constructor.SQL_MAPPING.id && values[mappingKeys[i]].constructor.SQL_MAPPING.id.type ? values[mappingKeys[i]].constructor.SQL_MAPPING.id.type : mapping[mappingKeys[i]].type))).concat(', ');
+            updateString = updateString.concat(mysql.escape(SQLUtils.formatValue(mapping[mappingKeys[i]].references && values[mappingKeys[i]] && values[mappingKeys[i]].id ? values[mappingKeys[i]].id : typeof values[mappingKeys[i]] === 'object' && values[mappingKeys[i]].constructor !== Date ? null : values[mappingKeys[i]] , mapping[mappingKeys[i]].references && values[mappingKeys[i]].constructor && values[mappingKeys[i]].constructor.SQL_MAPPING && values[mappingKeys[i]].constructor.SQL_MAPPING.id && values[mappingKeys[i]].constructor.SQL_MAPPING.id.type ? values[mappingKeys[i]].constructor.SQL_MAPPING.id.type : mapping[mappingKeys[i]].type))).concat(', ');
         }
     }
     return updateString.substr(0, updateString.length - 2);
