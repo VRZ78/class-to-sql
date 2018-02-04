@@ -266,7 +266,10 @@ MySQLRequester.selectIntermediateTable = function (intermediateTableName, fieldN
                 conditionsString = conditionsString + SQLUtils.getConditionString(tableName, mapping, conditions, true);
             }
             if(conditionsRemote) {
-                conditionsString = conditionsString + " AND " + SQLUtils.getConditionString(relationTableName, relationMapping, conditionsRemote, true);
+                if(conditionsString.length > 0) {
+                    conditionsString = conditionsString + " AND ";
+                }
+                conditionsString = conditionsString + SQLUtils.getConditionString(relationTableName, relationMapping, conditionsRemote, true);
             }
             let tableLinkString = SQLUtils.getTableLinkString(mapping, tableName);
             let intermediateString = SQLUtils.getIntermediateString(intermediateTableName, fieldName, linkFieldName, relationTableName, relationMapping, tableName, mapping);
