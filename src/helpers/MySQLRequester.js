@@ -101,7 +101,7 @@ MySQLRequester.update = function (tableName, values, mapping, conditions) {
         } else {
             if (!conditions) {
                 // Update a single instance
-                let updateString = SQLUtils.getUpdateString(values, mapping);
+                let updateString = SQLUtils.getUpdateString(values, mapping, true);
                 MySQLRequester.connection.query(`UPDATE ${tableName} SET ${updateString} WHERE ${mapping.id.sqlName} = ${values.id};`, function (err, rows) {
                     if (err) {
                         reject(err);
