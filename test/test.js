@@ -69,6 +69,19 @@ const findAll = function () {
     });
 };
 
+findAllDistinct = function () {
+    return new Promise((resolve, reject) => {
+        CalEvent.find(undefined, undefined, "lieu").then(function (calevents) {
+            console.log('Found ' + calevents.length + ' distinct events');
+            resolve();
+        }, function (err) {
+            console.log(err);
+            reject();
+        });
+    });
+};
+
+
 const findAllManipulation = function (manipulations) {
     return new Promise((resolve, reject) => {
         CalEvent.find(undefined, manipulations).then(function (calevents) {
@@ -209,9 +222,13 @@ findAll().then(function () {
                                         remove().then(function () {
                                             updateTable({firstName : "Jean"},{id : {$eq : 4}}).then(function () {
                                                 deleteTable({profil : {$eq : 4}}).then(function () {
-                                                    findAll().then(function () {
-                                                        console.log("----------------------------------------------");
-                                                        console.log("Done in " + (new Date() - startDate) + " ms");
+                                                    findAllDistinct().then(function () {
+                                                        findAll().then(function () {
+                                                            console.log("----------------------------------------------");
+                                                            console.log("Done in " + (new Date() - startDate) + " ms");
+                                                        }, function (err) {
+                                                            console.log(err);
+                                                        })
                                                     }, function (err) {
                                                         console.log(err);
                                                     })

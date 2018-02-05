@@ -192,8 +192,9 @@ MySQLRequester.deleteTable = function (tableName, mapping, conditions) {
  * @param mapping Description of the table
  * @param conditions Conditions for the WHERE clause
  * @param manipulations Manipulation of the query result
+ * @param distinct is request distinct
  */
-MySQLRequester.select = function (tableName, className, mapping, conditions, manipulations) {
+MySQLRequester.select = function (tableName, className, mapping, conditions, manipulations, distinct) {
     return new Promise(function (resolve, reject) {
         if (!MySQLRequester.connection) {
             reject(new Error("No MySQL connection set. Use setConnection first."));
@@ -204,7 +205,7 @@ MySQLRequester.select = function (tableName, className, mapping, conditions, man
             }
             if (!conditions) {
                 // Without conditions
-                MySQLRequester.connection.query(`SELECT * FROM ${tableName} ${manipulationString};`, function (err, rows) {
+                MySQLRequester.connection.query(`SELECT ${distinct ? 'DISTINCT ' + mapping[distinct].sqlName : '*'}  FROM ${tableName} ${manipulationString};`, function (err, rows) {
                     if (err) {
                         reject(err);
                     } else {
@@ -214,7 +215,7 @@ MySQLRequester.select = function (tableName, className, mapping, conditions, man
             } else {
                 // With condition
                 let conditionsString = SQLUtils.getConditionString(tableName, mapping, conditions, true);
-                MySQLRequester.connection.query(`SELECT * FROM ${tableName} WHERE ${conditionsString} ${manipulationString};`, function (err, rows) {
+                MySQLRequester.connection.query(`SELECT ${distinct ? 'DISTINCT' + mapping[distinct].sqlName : '*'}  FROM ${tableName} WHERE ${conditionsString} ${manipulationString};`, function (err, rows) {
                     if (err) {
                         reject(err);
                     } else {
@@ -233,8 +234,9 @@ MySQLRequester.select = function (tableName, className, mapping, conditions, man
  * @param mapping Description of the table
  * @param conditions Conditions for the WHERE clause
  * @param manipulations Manipulation of the query result
+ * @param distinct is request distinct
  */
-MySQLRequester.selectCrossTable = function (tableName, className, mapping, conditions, manipulations) {
+MySQLRequester.selectCrossTable = function (tableName, className, mapping, conditions, manipulations, distinct) {
     return new Promise(function (resolve, reject) {
         if (!MySQLRequester.connection) {
             reject(new Error("No MySQL connection set. Use setConnection first."));
@@ -274,8 +276,9 @@ MySQLRequester.selectCrossTable = function (tableName, className, mapping, condi
  * @param conditionsRemote Conditions related to the second table
  * @param conditionsLink Condition related to the linking table - TODO : Implement
  * @param manipulations Manipulation for the query
+ * @param distinct is request distinct
  */
-MySQLRequester.selectIntermediateTable = function (intermediateTableName, fieldName, linkFieldName, relationTableName, relationMapping, tableName, className, mapping, conditions, conditionsRemote, conditionsLink, manipulations) {
+MySQLRequester.selectIntermediateTable = function (intermediateTableName, fieldName, linkFieldName, relationTableName, relationMapping, tableName, className, mapping, conditions, conditionsRemote, conditionsLink, manipulations, distinct) {
     return new Promise(function (resolve, reject) {
         if (!MySQLRequester.connection) {
             reject(new Error("No MySQL connection set. Use setConnection first."));

@@ -114,9 +114,9 @@ module.exports = class SQLTable {
     /**
      * Return specific instances according to params
      */
-    static find(conditions, manipulations) {
+    static find(conditions, manipulations, distinct) {
         return new Promise((resolve, reject) => {
-            require("../helpers/" + index.getDBEngine() + "Requester.js").select(this.TABLE_NAME, this, this.SQL_MAPPING, conditions, manipulations).then((rows) => {
+            require("../helpers/" + index.getDBEngine() + "Requester.js").select(this.TABLE_NAME, this, this.SQL_MAPPING, conditions, manipulations, distinct).then((rows) => {
                 resolve(rows);
             }, function (err) {
                 reject(err);
@@ -127,9 +127,9 @@ module.exports = class SQLTable {
     /**
      * Same as find all, but populate attributes that reference other classes
      */
-    static findAndPopulate(conditions, manipulations) {
+    static findAndPopulate(conditions, manipulations, distinct) {
         return new Promise((resolve, reject) => {
-            require("../helpers/" + index.getDBEngine() + "Requester.js").selectCrossTable(this.TABLE_NAME, this, this.SQL_MAPPING, conditions, manipulations).then((rows) => {
+            require("../helpers/" + index.getDBEngine() + "Requester.js").selectCrossTable(this.TABLE_NAME, this, this.SQL_MAPPING, conditions, manipulations, distinct).then((rows) => {
                 resolve(rows);
             }, function (err) {
                 reject(err);
@@ -149,9 +149,9 @@ module.exports = class SQLTable {
      * @param manipulations
      * @returns {Promise}
      */
-    static findFromTable(intermediateTableName, relationClass, fieldName, linkFieldName, conditions, conditionsRemote, conditionsLink, manipulations) {
+    static findFromTable(intermediateTableName, relationClass, fieldName, linkFieldName, conditions, conditionsRemote, conditionsLink, manipulations, distinct) {
         return new Promise((resolve, reject) => {
-            require("../helpers/" + index.getDBEngine() + "Requester.js").selectIntermediateTable(intermediateTableName, fieldName, linkFieldName, relationClass.TABLE_NAME, relationClass.SQL_MAPPING, this.TABLE_NAME, this, this.SQL_MAPPING, conditions, conditionsRemote, conditionsLink, manipulations).then((rows) => {
+            require("../helpers/" + index.getDBEngine() + "Requester.js").selectIntermediateTable(intermediateTableName, fieldName, linkFieldName, relationClass.TABLE_NAME, relationClass.SQL_MAPPING, this.TABLE_NAME, this, this.SQL_MAPPING, conditions, conditionsRemote, conditionsLink, manipulations, distinct).then((rows) => {
                 resolve(rows);
             }, function (err) {
                 reject(err);
