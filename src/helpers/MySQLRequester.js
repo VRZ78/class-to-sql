@@ -215,7 +215,7 @@ MySQLRequester.select = function (tableName, className, mapping, conditions, man
             } else {
                 // With condition
                 let conditionsString = SQLUtils.getConditionString(tableName, mapping, conditions, true);
-                MySQLRequester.connection.query(`SELECT ${distinct ? 'DISTINCT' + mapping[distinct].sqlName : '*'}  FROM ${tableName} WHERE ${conditionsString} ${manipulationString};`, function (err, rows) {
+                MySQLRequester.connection.query(`SELECT ${distinct ? 'DISTINCT ' + mapping[distinct].sqlName : '*'}  FROM ${tableName} WHERE ${conditionsString} ${manipulationString};`, function (err, rows) {
                     if (err) {
                         reject(err);
                     } else {
