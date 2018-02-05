@@ -86,6 +86,19 @@ module.exports = class SQLTable {
     };
 
     /**
+     * Update several instances based on condition
+     */
+    static remove(values, conditions) {
+        return new Promise((resolve, reject) => {
+            require("../helpers/" + index.getDBEngine() + "Requester.js").updateTable(this.TABLE_NAME, values, this.SQL_MAPPING, conditions).then((rows) => {
+                resolve(rows);
+            }, function (err) {
+                reject(err);
+            })
+        })
+    }
+
+    /**
      * Remove Link from this class with another class in an intermediate table
      */
     removeLink(instance, intermediateTableName, fieldName, instanceFieldName) {

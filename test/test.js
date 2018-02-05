@@ -160,6 +160,18 @@ const removeLink = function () {
 const updateTable = function (values, condition) {
     return new Promise(function (resolve, reject) {
         Chauffeur.update(values, condition).then(function () {
+            console.log('successfully updated table according to conditions');
+            resolve()
+        }, function (err) {
+            reject(err);
+        });
+    })
+};
+
+const deleteTable = function (values, condition) {
+    return new Promise(function (resolve, reject) {
+        Chauffeur.remove(values, condition).then(function () {
+            console.log('successfully deleted table according to conditions');
             resolve()
         }, function (err) {
             reject(err);
@@ -196,9 +208,13 @@ findAll().then(function () {
                                     removeLink().then(function () {
                                         remove().then(function () {
                                             updateTable({firstName : "Jean"},{id : {$eq : 4}}).then(function () {
-                                                findAll().then(function () {
-                                                    console.log("----------------------------------------------");
-                                                    console.log("Done in " + (new Date() - startDate) + " ms");
+                                                deleteTable({firstName : "Jean"},{id : {$eq : 4}}).then(function () {
+                                                    findAll().then(function () {
+                                                        console.log("----------------------------------------------");
+                                                        console.log("Done in " + (new Date() - startDate) + " ms");
+                                                    }, function (err) {
+                                                        console.log(err);
+                                                    })
                                                 }, function (err) {
                                                     console.log(err);
                                                 })
