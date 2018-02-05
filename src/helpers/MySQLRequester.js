@@ -168,7 +168,7 @@ MySQLRequester.delete = function (tableName, id, fieldName) {
  * @param mapping: The description of the table
  * @param conditions: Condition on what to insert
  */
-MySQLRequester.deleteTable = function (tableName, values, mapping, conditions) {
+MySQLRequester.deleteTable = function (tableName, mapping, conditions) {
     return new Promise(function (resolve, reject) {
         if (!MySQLRequester.connection) {
             reject(new Error("No MySQL connection set. Use setConnection first."));

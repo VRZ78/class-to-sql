@@ -56,6 +56,11 @@ module.exports = class Chauffeur extends classToSql.sqlTable {
             textColor: {
                 sqlName: "couleurTexteCh",
                 type: "String"
+            },
+            profil : {
+                sqlName: "idProfil",
+                References : Profil,
+                type: "String"
             }
         }
     };

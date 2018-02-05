@@ -168,9 +168,9 @@ const updateTable = function (values, condition) {
     })
 };
 
-const deleteTable = function (values, condition) {
+const deleteTable = function (condition) {
     return new Promise(function (resolve, reject) {
-        Chauffeur.remove(values, condition).then(function () {
+        Chauffeur.remove(condition).then(function () {
             console.log('successfully deleted table according to conditions');
             resolve()
         }, function (err) {
@@ -208,7 +208,7 @@ findAll().then(function () {
                                     removeLink().then(function () {
                                         remove().then(function () {
                                             updateTable({firstName : "Jean"},{id : {$eq : 4}}).then(function () {
-                                                deleteTable({firstName : "Jean"},{id : {$eq : 4}}).then(function () {
+                                                deleteTable({profil : {$eq : 4}}).then(function () {
                                                     findAll().then(function () {
                                                         console.log("----------------------------------------------");
                                                         console.log("Done in " + (new Date() - startDate) + " ms");

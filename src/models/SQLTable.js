@@ -88,9 +88,9 @@ module.exports = class SQLTable {
     /**
      * Update several instances based on condition
      */
-    static remove(values, conditions) {
+    static remove(conditions) {
         return new Promise((resolve, reject) => {
-            require("../helpers/" + index.getDBEngine() + "Requester.js").deleteTable(this.TABLE_NAME, values, this.SQL_MAPPING, conditions).then((rows) => {
+            require("../helpers/" + index.getDBEngine() + "Requester.js").deleteTable(this.TABLE_NAME, this.SQL_MAPPING, conditions).then((rows) => {
                 resolve(rows);
             }, function (err) {
                 reject(err);
