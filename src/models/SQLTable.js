@@ -112,6 +112,27 @@ module.exports = class SQLTable {
     };
 
     /**
+     * Remove instances from a table which link this class and another class
+     * @param intermediateTableName
+     * @param relationClass
+     * @param fieldName
+     * @param linkFieldName
+     * @param conditions
+     * @param conditionsRemote
+     * @param conditionsLink
+     * @returns {Promise}
+     */
+    static removeFromTable(intermediateTableName, relationClass, fieldName, linkFieldName, conditions, conditionsRemote, conditionsLink) {
+        return new Promise((resolve, reject) => {
+            require("../helpers/" + index.getDBEngine() + "Requester.js").deleteFromTable(intermediateTableName, fieldName, linkFieldName, relationClass.TABLE_NAME, relationClass.SQL_MAPPING, this.TABLE_NAME, this, this.SQL_MAPPING, conditions, conditionsRemote, conditionsLink).then((rows) => {
+                resolve(rows);
+            }, function (err) {
+                reject(err);
+            })
+        })
+    }
+
+    /**
      * Return specific instances according to params
      */
     static find(conditions, manipulations, distinct) {

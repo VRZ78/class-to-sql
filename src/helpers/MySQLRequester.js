@@ -234,7 +234,7 @@ MySQLRequester.select = function (tableName, className, mapping, conditions, man
  * @param mapping Description of the table
  * @param conditions Conditions for the WHERE clause
  * @param manipulations Manipulation of the query result
- * @param distinct is request distinct
+ * @param distinct is request distinct - TODO : Implement
  */
 MySQLRequester.selectCrossTable = function (tableName, className, mapping, conditions, manipulations, distinct) {
     return new Promise(function (resolve, reject) {
@@ -276,7 +276,7 @@ MySQLRequester.selectCrossTable = function (tableName, className, mapping, condi
  * @param conditionsRemote Conditions related to the second table
  * @param conditionsLink Condition related to the linking table - TODO : Implement
  * @param manipulations Manipulation for the query
- * @param distinct is request distinct
+ * @param distinct is request distinct - TODO : Implement
  */
 MySQLRequester.selectIntermediateTable = function (intermediateTableName, fieldName, linkFieldName, relationTableName, relationMapping, tableName, className, mapping, conditions, conditionsRemote, conditionsLink, manipulations, distinct) {
     return new Promise(function (resolve, reject) {
@@ -312,3 +312,45 @@ MySQLRequester.selectIntermediateTable = function (intermediateTableName, fieldN
 };
 
 
+/**
+ * Perform a delete on a table linking other tables
+ * @param intermediateTableName Name of the table that links the other tables
+ * @param fieldName Name of the id field of the intermediate table for the first element
+ * @param linkFieldName Name of the id field of the intermediate table for the second element
+ * @param tableName Name of the first table
+ * @param mapping Description of the first table
+ * @param relationTableName Name of the second table
+ * @param relationMapping Description of the second table
+ * @param className Constructor of the class to instantiate after the request
+ * @param conditions Conditions related to the first table
+ * @param conditionsRemote Conditions related to the second table
+ * @param conditionsLink Condition related to the linking table - TODO : Implement
+ */
+MySQLRequester.deleteFromTable = function (intermediateTableName, fieldName, linkFieldName, relationTableName, relationMapping, tableName, className, mapping, conditions, conditionsRemote, conditionsLink) {
+    return new Promise(function (resolve, reject) {
+        if (!MySQLRequester.connection) {
+            reject(new Error("No MySQL connection set. Use setConnection first."));
+        } else {
+            let tableString = SQLUtils.getTableString(mapping);
+            let conditionsString = '';
+            if(conditions) {
+                conditionsString = conditionsString + SQLUtils.getConditionString(tableName, mapping, conditions, true);
+            }
+            if(conditionsRemote) {
+                if(conditionsString.length > 0) {
+                    conditionsString = conditionsString + " AND ";
+                }
+                conditionsString = conditionsString + SQLUtils.getConditionString(relationTableName, relationMapping, conditionsRemote, true);
+            }
+            let tableLinkString = SQLUtils.getTableLinkString(mapping, tableName);
+            let intermediateString = SQLUtils.getIntermediateString(intermediateTableName, fieldName, linkFieldName, relationTableName, relationMapping, tableName, mapping);
+            MySQLRequester.connection.query(`DELETE ${intermediateTableName}.* FROM ${tableName},${intermediateTableName},${relationTableName}${tableString.length > 0 ? ',' + tableString : ''} WHERE ${intermediateString} ${tableLinkString ? 'AND' : '' } ${tableLinkString} ${conditionsString ? 'AND' : '' } ${conditionsString};`, function (err, rows) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(SQLUtils.createObjectsFromRow(className, rows, mapping));
+                }
+            });
+        }
+    })
+};

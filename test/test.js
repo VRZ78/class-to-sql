@@ -130,6 +130,18 @@ const findFromTable = function (intermediateTable, intermediateClass, fieldName,
     });
 };
 
+const removeFromTable = function (intermediateTable, intermediateClass, fieldName, linkFieldName, conditions, conditionsRemote, conditionsLink) {
+    return new Promise((resolve, reject) => {
+        CalEvent.removeFromTable(intermediateTable, intermediateClass, fieldName, linkFieldName, conditions, conditionsRemote, conditionsLink).then(function (calEvents) {
+            console.log('Remove ' + calEvents.length + ' events with conditions from linked table ' + conditions);
+            resolve();
+        }, function (err) {
+            console.log(err);
+            reject();
+        });
+    });
+};
+
 const linkTo = function () {
     return new Promise((resolve, reject) => {
 
@@ -211,7 +223,7 @@ findAll().then(function () {
                                 way: 'ASC'
                             }
                         }).then(function () {
-                            findFromTable("chauffeur_and_evenement", Chauffeur, "idEv", "idCh", {description : {$eq : "Carole"}}, {id: {$eq: 2}}, {}, {
+                            findFromTable("chauffeur_and_evenement", Chauffeur, "idEv", "idCh", {description: {$eq: "Carole"}}, {id: {$eq: 2}}, {}, {
                                 orderBy: {
                                     value: "id",
                                     way: 'ASC'
@@ -220,12 +232,16 @@ findAll().then(function () {
                                 linkTo().then(function () {
                                     removeLink().then(function () {
                                         remove().then(function () {
-                                            updateTable({firstName : "Jean"},{id : {$eq : 4}}).then(function () {
-                                                deleteTable({profil : {$eq : 4}}).then(function () {
-                                                    findAllDistinct().then(function () {
-                                                        findAll().then(function () {
-                                                            console.log("----------------------------------------------");
-                                                            console.log("Done in " + (new Date() - startDate) + " ms");
+                                            updateTable({firstName: "Jean"}, {id: {$eq: 4}}).then(function () {
+                                                deleteTable({profil: {$eq: 4}}).then(function () {
+                                                    removeFromTable("chauffeur_and_evenement", Chauffeur, "idEv", "idCh", undefined, {id: {$eq: 5}}, {}).then(function () {
+                                                        findAllDistinct().then(function () {
+                                                            findAll().then(function () {
+                                                                console.log("----------------------------------------------");
+                                                                console.log("Done in " + (new Date() - startDate) + " ms");
+                                                            }, function (err) {
+                                                                console.log(err);
+                                                            })
                                                         }, function (err) {
                                                             console.log(err);
                                                         })
