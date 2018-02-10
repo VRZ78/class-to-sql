@@ -58,6 +58,19 @@ module.exports = class CalEvent extends classToSql.sqlTable {
         return "MySQL";
     }
 
+    static get LINKING_MAPPING () {
+        return {
+            hasResponded : {
+               sqlName: "hasResponded",
+                type: "Number"
+            },
+            responseText : {
+                sqlName: "response",
+                type: "String"
+            },
+        }
+    }
+
     constructor(id, title, description, lieu, heureDeb, minuteDeb, heureFin, minuteFin, dateDeb, dateFin) {
 
         super();

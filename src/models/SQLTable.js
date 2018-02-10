@@ -36,9 +36,9 @@ module.exports = class SQLTable {
     /**
      * Link this class and another class in an intermediate table
      */
-    linkTo(instance, intermediateTableName, fieldName, instanceFieldName) {
+    linkTo(instance, intermediateTableName, fieldName, instanceFieldName, intermediateMapping, intermediateValues) {
         return new Promise((resolve, reject) => {
-            require("../helpers/" + index.getDBEngine() + "Requester.js").insertLink(this.id, instance.id, intermediateTableName, fieldName, instanceFieldName).then((rows) => {
+            require("../helpers/" + index.getDBEngine() + "Requester.js").insertLink(this.id, instance.id, intermediateTableName, fieldName, instanceFieldName,intermediateMapping, intermediateValues).then((rows) => {
                 resolve(rows);
             }, function (err) {
                 reject(err);

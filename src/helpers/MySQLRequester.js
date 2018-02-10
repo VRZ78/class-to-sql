@@ -43,14 +43,22 @@ MySQLRequester.insert = function (tableName, values, mapping) {
  * @param intermediateTableName Name of the table used to link the two elements
  * @param fieldName Name of the id field of the intermediate table for the first element
  * @param linkFieldName Name of the id field of the intermediate table for the second element
+ * @param intermediateMapping Mapping for the custom values of the intermediate table
+ * @param intermediateValues Values for the intermediateTable
  * @returns {Promise}
  */
-MySQLRequester.insertLink = function (id, linkId, intermediateTableName, fieldName, linkFieldName) {
+MySQLRequester.insertLink = function (id, linkId, intermediateTableName, fieldName, linkFieldName, intermediateMapping, intermediateValues) {
     return new Promise(function (resolve, reject) {
         if (!MySQLRequester.connection) {
             reject(new Error("No MySQL connection set. Use setConnection first."));
         } else {
-            MySQLRequester.connection.query(`INSERT INTO ${intermediateTableName} (${fieldName},${linkFieldName}) VALUES (${mysql.escape(id)}, ${mysql.escape(linkId)});`, function (err, rows) {
+            let descriptionString;
+            let valuesString;
+            if(intermediateMapping && intermediateValues) {
+                descriptionString = SQLUtils.getColumnNamesFromMapping(intermediateMapping, true);
+                valuesString = SQLUtils.getValuesFromMapping(intermediateValues, intermediateMapping, true);
+            }
+            MySQLRequester.connection.query(`INSERT INTO ${intermediateTableName} (${fieldName},${linkFieldName}${descriptionString ? ' ,' + descriptionString : ''}) VALUES (${mysql.escape(id)}, ${mysql.escape(linkId)}${valuesString ? ', ' + valuesString : ''});`, function (err, rows) {
                 if (err) {
                     reject(err);
                 } else {
