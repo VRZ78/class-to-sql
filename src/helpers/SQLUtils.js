@@ -207,10 +207,17 @@ SQLUtils.formatManipulation = function (manipulationType, manipulationValue, map
  * @param className
  * @param mapping
  * @param rows
+ * @param additionalMapping
  */
-SQLUtils.createObjectsFromRow = function (className, rows, mapping) {
+SQLUtils.createObjectsFromRow = function (className, rows, mapping, additionalMapping) {
     let objects = [];
     let classKeys = Object.keys(className.SQL_MAPPING);
+    if(additionalMapping) {
+        classKeys = Object.assign(classKeys, Object.keys(additionalMapping));
+        if(mapping) {
+            mapping = Object.assign(mapping, additionalMapping);
+        }
+    }
     if(!mapping) {
         for(let i = 0; i < rows.length; i++) {
             objects.push(new arguments[0]());
@@ -227,7 +234,7 @@ SQLUtils.createObjectsFromRow = function (className, rows, mapping) {
                 if(mapping[classKeys[j]].references) {
                     objects[i][classKeys[j]] = SQLUtils.createObjectsFromRow(mapping[classKeys[j]].references, [rows[i]])[0];
                 } else {
-                    objects[i][classKeys[j]] = rows[i][className.SQL_MAPPING[classKeys[j]].sqlName];
+                    objects[i][classKeys[j]] = rows[i][mapping[classKeys[j]].sqlName];
                 }
             }
         }

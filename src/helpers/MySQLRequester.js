@@ -313,7 +313,7 @@ MySQLRequester.selectIntermediateTable = function (intermediateTableName, fieldN
                 if (err) {
                     reject(err);
                 } else {
-                    resolve(SQLUtils.createObjectsFromRow(className, rows, Object.assign(mapping, additionalMapping)));
+                    resolve(SQLUtils.createObjectsFromRow(className, rows, mapping, additionalMapping));
                 }
             });
         }
