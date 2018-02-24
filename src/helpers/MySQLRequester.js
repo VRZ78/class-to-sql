@@ -285,8 +285,9 @@ MySQLRequester.selectCrossTable = function (tableName, className, mapping, condi
  * @param conditionsLink Condition related to the linking table - TODO : Implement
  * @param manipulations Manipulation for the query
  * @param distinct is request distinct - TODO : Implement
+ * @param additionalMapping - Will instantiate the class with those addtionnal attriobutes from the rows
  */
-MySQLRequester.selectIntermediateTable = function (intermediateTableName, fieldName, linkFieldName, relationTableName, relationMapping, tableName, className, mapping, conditions, conditionsRemote, conditionsLink, manipulations, distinct) {
+MySQLRequester.selectIntermediateTable = function (intermediateTableName, fieldName, linkFieldName, relationTableName, relationMapping, tableName, className, mapping, conditions, conditionsRemote, conditionsLink, manipulations, distinct, additionalMapping) {
     return new Promise(function (resolve, reject) {
         if (!MySQLRequester.connection) {
             reject(new Error("No MySQL connection set. Use setConnection first."));
@@ -312,7 +313,7 @@ MySQLRequester.selectIntermediateTable = function (intermediateTableName, fieldN
                 if (err) {
                     reject(err);
                 } else {
-                    resolve(SQLUtils.createObjectsFromRow(className, rows, mapping));
+                    resolve(SQLUtils.createObjectsFromRow(className, rows, Object.assign(mapping, additionalMapping)));
                 }
             });
         }

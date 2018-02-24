@@ -164,15 +164,17 @@ module.exports = class SQLTable {
      * @param relationClass
      * @param fieldName
      * @param linkFieldName
+     * @param additionalMapping
      * @param conditions
      * @param conditionsRemote
      * @param conditionsLink
      * @param manipulations
+     * @param distinct
      * @returns {Promise}
      */
-    static findFromTable(intermediateTableName, relationClass, fieldName, linkFieldName, conditions, conditionsRemote, conditionsLink, manipulations, distinct) {
+    static findFromTable(intermediateTableName, relationClass, fieldName, linkFieldName, additionalMapping, conditions, conditionsRemote, conditionsLink, manipulations, distinct) {
         return new Promise((resolve, reject) => {
-            require("../helpers/" + index.getDBEngine() + "Requester.js").selectIntermediateTable(intermediateTableName, fieldName, linkFieldName, relationClass.TABLE_NAME, relationClass.SQL_MAPPING, this.TABLE_NAME, this, this.SQL_MAPPING, conditions, conditionsRemote, conditionsLink, manipulations, distinct).then((rows) => {
+            require("../helpers/" + index.getDBEngine() + "Requester.js").selectIntermediateTable(intermediateTableName, fieldName, linkFieldName, relationClass.TABLE_NAME, relationClass.SQL_MAPPING, this.TABLE_NAME, this, this.SQL_MAPPING, conditions, conditionsRemote, conditionsLink, manipulations, distinct, additionalMapping).then((rows) => {
                 resolve(rows);
             }, function (err) {
                 reject(err);
