@@ -213,7 +213,7 @@ SQLUtils.createObjectsFromRow = function (className, rows, mapping, additionalMa
     let objects = [];
     let classKeys = Object.keys(className.SQL_MAPPING);
     if(additionalMapping) {
-        classKeys = Object.assign(classKeys, Object.keys(additionalMapping));
+        classKeys = classKeys.concat(Object.keys(additionalMapping));
         if(mapping) {
             mapping = Object.assign(mapping, additionalMapping);
         }
