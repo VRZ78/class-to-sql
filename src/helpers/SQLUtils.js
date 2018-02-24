@@ -234,7 +234,7 @@ SQLUtils.createObjectsFromRow = function (className, rows, mapping, additionalMa
                 if(mapping[classKeys[j]].references) {
                     objects[i][classKeys[j]] = SQLUtils.createObjectsFromRow(mapping[classKeys[j]].references, [rows[i]])[0];
                 } else {
-                    objects[i][classKeys[j]] = rows[i][mapping[classKeys[j]].sqlName];
+                    objects[i][classKeys[j]] = className.SQL_MAPPING[classKeys[j]] ? rows[i][className.SQL_MAPPING[classKeys[j]].sqlName] : rows[i][mapping[classKeys[j]].sqlName];
                 }
             }
         }
