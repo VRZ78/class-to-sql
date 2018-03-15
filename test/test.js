@@ -223,7 +223,7 @@ findAll().then(function () {
                                 way: 'ASC'
                             }
                         }).then(function () {
-                            findFromTable("chauffeur_and_evenement", Chauffeur, "idEv", "idCh",{isActive : {sqlName : "isActive"}}, {description: {$eq: "Carole"}}, {id: {$eq: 2}}, {}, {
+                            findFromTable("chauffeur_and_evenement", CalEvent, "idEv", "idCh",{isActive : {sqlName : "isActive"}}, {description: {$eq: "Carole"}}, {id: {$eq: 2}}, {}, {
                                 orderBy: {
                                     value: "id",
                                     way: 'ASC'

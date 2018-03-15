@@ -312,6 +312,12 @@ MySQLRequester.selectIntermediateTable = function (intermediateTableName, fieldN
             // If linking the same table, don't include the relationTableName
             if(tableName === relationTableName){
                 relationTableName = "";
+                // Keep only one link in intermediate ables, otherwise the request won't have any matches
+                if(!conditions && conditionsRemote) {
+                    intermediateString = intermediateString.split("AND")[0];
+                } else {
+                    intermediateString = intermediateString.split("AND")[1];
+                }
             }
             MySQLRequester.connection.query(`SELECT * FROM ${tableName},${intermediateTableName}${relationTableName ? "," : ""}${relationTableName}${tableString.length > 0 ? ',' + tableString : ''} WHERE ${intermediateString} ${tableLinkString ? 'AND' : '' } ${tableLinkString} ${conditionsString ? 'AND' : '' } ${conditionsString} ${manipulationString};`, function (err, rows) {
                 if (err) {
