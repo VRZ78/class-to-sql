@@ -309,7 +309,11 @@ MySQLRequester.selectIntermediateTable = function (intermediateTableName, fieldN
             }
             let tableLinkString = SQLUtils.getTableLinkString(mapping, tableName);
             let intermediateString = SQLUtils.getIntermediateString(intermediateTableName, fieldName, linkFieldName, relationTableName, relationMapping, tableName, mapping);
-            MySQLRequester.connection.query(`SELECT * FROM ${tableName},${intermediateTableName},${relationTableName}${tableString.length > 0 ? ',' + tableString : ''} WHERE ${intermediateString} ${tableLinkString ? 'AND' : '' } ${tableLinkString} ${conditionsString ? 'AND' : '' } ${conditionsString} ${manipulationString};`, function (err, rows) {
+            // If linking the same table, don't include the relationTableName
+            if(tableName === relationTableName){
+                relationTableName = "";
+            }
+            MySQLRequester.connection.query(`SELECT * FROM ${tableName},${intermediateTableName}${relationTableName ? "," : ""}${relationTableName}${tableString.length > 0 ? ',' + tableString : ''} WHERE ${intermediateString} ${tableLinkString ? 'AND' : '' } ${tableLinkString} ${conditionsString ? 'AND' : '' } ${conditionsString} ${manipulationString};`, function (err, rows) {
                 if (err) {
                     reject(err);
                 } else {
