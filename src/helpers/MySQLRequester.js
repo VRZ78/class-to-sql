@@ -373,3 +373,15 @@ MySQLRequester.deleteFromTable = function (intermediateTableName, fieldName, lin
         }
     })
 };
+
+MySQLRequester.customQuery = function(query, classToInstantiate) {
+    return new Promise(function(resolve, reject) {
+        MySQLRequester.connection.query(query, function (err, rows) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(SQLUtils.createObjectsFromRow(classToInstantiate, rows, classToInstantiate.SQL_MAPPING));
+            }
+        });
+    });
+}

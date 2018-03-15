@@ -12,5 +12,17 @@ module.exports.setDBEngine = function (engine) {
 };
 module.exports.getDBEngine = function () {
     return dbEngine
+};
+module.exports.customQuery = function (query, classToInstantiate) {
+    return new Promise(function(resolve, reject) {
+        if(dbEngine === "MySQL") {
+            MySQLRequester.customQuery(query, classToInstantiate).then(function(objects) {
+                resolve(objects);
+            }, function(err) {
+                reject(err);
+            })
+        }
+    })
+
 }
 

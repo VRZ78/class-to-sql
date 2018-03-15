@@ -204,6 +204,18 @@ const deleteTable = function (condition) {
     })
 };
 
+const customQuery = function(query, classToInstantiate) {
+    return new Promise(function (resolve, reject) {
+        classToSql.customQuery(query, classToInstantiate).then(function(objects) {
+            console.log('successfully executed custom query. Found ' + objects.length + " obhects");
+            resolve()
+        }, function(err) {
+            reject(err);
+        })
+    })
+
+}
+
 let startDate = new Date();
 
 findAll().then(function () {
@@ -237,8 +249,12 @@ findAll().then(function () {
                                                     removeFromTable("chauffeur_and_evenement", Chauffeur, "idEv", "idCh", undefined, {id: {$eq: 5}}, {}).then(function () {
                                                         findAllDistinct().then(function () {
                                                             findAll().then(function () {
-                                                                console.log("----------------------------------------------");
-                                                                console.log("Done in " + (new Date() - startDate) + " ms");
+                                                                customQuery("SELECT * FROM evenement;", CalEvent).then(function() {
+                                                                    console.log("----------------------------------------------");
+                                                                    console.log("Done in " + (new Date() - startDate) + " ms");
+                                                                }, function(err) {
+                                                                    console.log(err);
+                                                                });
                                                             }, function (err) {
                                                                 console.log(err);
                                                             })
