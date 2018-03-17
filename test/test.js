@@ -216,6 +216,18 @@ const customQuery = function(query, classToInstantiate) {
 
 }
 
+const findLike = function (condition) {
+    return new Promise((resolve, reject) => {
+        CalEvent.find(condition).then(function (calevents) {
+            console.log('Found ' + calevents.length + ' events with LIKE conditions')
+            resolve();
+        }, function (err) {
+            console.log(err);
+            reject();
+        });
+    });
+};
+
 let startDate = new Date();
 
 findAll().then(function () {
@@ -229,32 +241,36 @@ findAll().then(function () {
                             way: 'ASC'
                         }, limit: 10
                     }).then(function () {
-                        findAndPopulate({profil: {id: {$gt: 1}}}, {
-                            orderBy: {
-                                value: "id",
-                                way: 'ASC'
-                            }
-                        }).then(function () {
-                            findFromTable("chauffeur_and_evenement", CalEvent, "idEv", "idCh",{isActive : {sqlName : "isActive"}}, {description: {$eq: "Carole"}}, {id: {$eq: 2}}, {}, {
+                        findLike({title : {$like : "EN%"}}).then(function () {
+                            findAndPopulate({profil: {id: {$gt: 1}}}, {
                                 orderBy: {
                                     value: "id",
                                     way: 'ASC'
                                 }
                             }).then(function () {
-                                linkTo().then(function () {
-                                    removeLink().then(function () {
-                                        remove().then(function () {
-                                            updateTable({firstName: "Jean"}, {id: {$eq: 4}}).then(function () {
-                                                deleteTable({profil: {$eq: 4}}).then(function () {
-                                                    removeFromTable("chauffeur_and_evenement", Chauffeur, "idEv", "idCh", undefined, {id: {$eq: 5}}, {}).then(function () {
-                                                        findAllDistinct().then(function () {
-                                                            findAll().then(function () {
-                                                                customQuery("SELECT * FROM evenement;", CalEvent).then(function() {
-                                                                    console.log("----------------------------------------------");
-                                                                    console.log("Done in " + (new Date() - startDate) + " ms");
-                                                                }, function(err) {
+                                findFromTable("chauffeur_and_evenement", CalEvent, "idEv", "idCh",{isActive : {sqlName : "isActive"}}, {description: {$eq: "Carole"}}, {id: {$eq: 2}}, {}, {
+                                    orderBy: {
+                                        value: "id",
+                                        way: 'ASC'
+                                    }
+                                }).then(function () {
+                                    linkTo().then(function () {
+                                        removeLink().then(function () {
+                                            remove().then(function () {
+                                                updateTable({firstName: "Jean"}, {id: {$eq: 4}}).then(function () {
+                                                    deleteTable({profil: {$eq: 4}}).then(function () {
+                                                        removeFromTable("chauffeur_and_evenement", Chauffeur, "idEv", "idCh", undefined, {id: {$eq: 5}}, {}).then(function () {
+                                                            findAllDistinct().then(function () {
+                                                                findAll().then(function () {
+                                                                    customQuery("SELECT * FROM evenement;", CalEvent).then(function() {
+                                                                        console.log("----------------------------------------------");
+                                                                        console.log("Done in " + (new Date() - startDate) + " ms");
+                                                                    }, function(err) {
+                                                                        console.log(err);
+                                                                    });
+                                                                }, function (err) {
                                                                     console.log(err);
-                                                                });
+                                                                })
                                                             }, function (err) {
                                                                 console.log(err);
                                                             })
@@ -283,7 +299,7 @@ findAll().then(function () {
                                 console.log(err);
                             })
                         }, function (err) {
-                            console.log(err);
+                            console.log(err)
                         })
                     }, function (err) {
                         console.log(err);

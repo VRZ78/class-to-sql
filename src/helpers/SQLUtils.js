@@ -192,6 +192,8 @@ SQLUtils.formatConditionSign = function (sign) {
             return "<=";
         case "$ne"  :
             return "<>";
+        case "$like" :
+            return "LIKE";
     }
 };
 
