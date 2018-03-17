@@ -200,9 +200,9 @@ MySQLRequester.deleteTable = function (tableName, mapping, conditions) {
  * @param mapping Description of the table
  * @param conditions Conditions for the WHERE clause
  * @param manipulations Manipulation of the query result
- * @param distinct is request distinct
+ * @param aggregation
  */
-MySQLRequester.select = function (tableName, className, mapping, conditions, manipulations, distinct) {
+MySQLRequester.select = function (tableName, className, mapping, conditions, manipulations, aggregation) {
     return new Promise(function (resolve, reject) {
         if (!MySQLRequester.connection) {
             reject(new Error("No MySQL connection set. Use setConnection first."));
@@ -211,9 +211,13 @@ MySQLRequester.select = function (tableName, className, mapping, conditions, man
             if(manipulations) {
                 manipulationString = SQLUtils.getManipulationString(manipulations, mapping);
             }
+            let aggregationString = "";
+            if(aggregation) {
+                aggregationString = SQLUtils.getAggregationString(aggregation, mapping);
+            }
             if (!conditions) {
                 // Without conditions
-                MySQLRequester.connection.query(`SELECT ${distinct ? 'DISTINCT ' + mapping[distinct].sqlName : '*'}  FROM ${tableName} ${manipulationString};`, function (err, rows) {
+                MySQLRequester.connection.query(`SELECT ${aggregationString ? aggregationString : '*'}  FROM ${tableName} ${manipulationString};`, function (err, rows) {
                     if (err) {
                         reject(err);
                     } else {
@@ -223,7 +227,7 @@ MySQLRequester.select = function (tableName, className, mapping, conditions, man
             } else {
                 // With condition
                 let conditionsString = SQLUtils.getConditionString(tableName, mapping, conditions, true);
-                MySQLRequester.connection.query(`SELECT ${distinct ? 'DISTINCT ' + mapping[distinct].sqlName : '*'}  FROM ${tableName} WHERE ${conditionsString} ${manipulationString};`, function (err, rows) {
+                MySQLRequester.connection.query(`SELECT ${aggregationString ? aggregationString : '*'}  FROM ${tableName} WHERE ${conditionsString} ${manipulationString};`, function (err, rows) {
                     if (err) {
                         reject(err);
                     } else {

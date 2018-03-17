@@ -140,6 +140,16 @@ SQLUtils.getIntermediateString = function (intermediateTableName, fieldName, lin
     return `${intermediateTableName}.${linkFieldName} = ${relationTableName}.${relationMapping.id.sqlName} AND ${intermediateTableName}.${fieldName} = ${tableName}.${mapping.id.sqlName}`
 };
 
+
+/**
+ * Prepare String for Aggregation functions
+ * @param aggregation
+ * @param mapping
+ */
+SQLUtils.getAggregationString = function(aggregation, mapping) {
+    return `${SQLUtils.formatAggregationFunctionName(aggregation.function)}(${mysql.format(mapping[aggregation.attribute].sqlName)})`
+};
+
 /**
  * Format a value according to its type
  * @param value
@@ -199,6 +209,26 @@ SQLUtils.formatManipulation = function (manipulationType, manipulationValue, map
             return `ORDER BY ${relationTableName ? relationTableName + '.' : ''}${mapping[manipulationValue.value].sqlName} ${manipulationValue.way}`;
         case "limit" :
             return `LIMIT ${manipulationValue}`
+    }
+};
+
+/**
+ * Return the name of a function
+ */
+SQLUtils.formatAggregationFunctionName = function (functionName) {
+    switch(functionName) {
+        case "average" :
+            return "AVG"
+        case "count" :
+            return "COUNT"
+        case "max" :
+            return "MAX"
+        case "min" :
+            return "MIN"
+        case "sum" :
+            return "SUM"
+        case "distinct" :
+            return "DISTINCT"
     }
 };
 

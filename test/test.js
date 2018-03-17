@@ -71,7 +71,7 @@ const findAll = function () {
 
 findAllDistinct = function () {
     return new Promise((resolve, reject) => {
-        CalEvent.find(undefined, undefined, "lieu").then(function (calevents) {
+        CalEvent.find(undefined, undefined, {function : "distinct", attribute : "lieu"}).then(function (calevents) {
             console.log('Found ' + calevents.length + ' distinct events');
             resolve();
         }, function (err) {
