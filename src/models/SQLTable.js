@@ -73,6 +73,21 @@ module.exports = class SQLTable {
     }
 
     /**
+     * Update the link between this class and another class in an intermediate table
+     */
+    updateLink(instance, intermediateTableName, fieldName, instanceFieldName, intermediateMapping, intermediateValues) {
+        return new Promise((resolve, reject) => {
+            require("../helpers/" + index.getDBEngine() + "Requester.js").updateLink(this.id, instance.id, intermediateTableName, fieldName, instanceFieldName,intermediateMapping, intermediateValues).then((rows) => {
+                resolve(rows);
+            }, function (err) {
+                reject(err);
+            })
+        });
+    };
+
+
+
+    /**
      * Delete the instance from the db
      */
     remove() {

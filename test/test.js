@@ -162,6 +162,26 @@ const linkTo = function () {
     });
 };
 
+const updateLink = function () {
+    return new Promise((resolve, reject) => {
+
+        let singleChauffeur;
+        Chauffeur.find({id: {$eq: 2}}).then(function (chauffeur) {
+            singleChauffeur = chauffeur[0];
+            newEvent.updateLink(singleChauffeur, 'chauffeur_and_evenement', "idEv", "idCh", CalEvent.LINKING_MAPPING, {hasResponded : false, responseText : "NOT OK"}).then(function () {
+                console.log('succesfully updated link to a chauffeur')
+                resolve();
+            }, function (err) {
+                console.log(err);
+                reject();
+            })
+        }, function (err) {
+            console.log(err);
+            reject();
+        })
+    });
+};
+
 const removeLink = function () {
     return new Promise((resolve, reject) => {
 
@@ -248,26 +268,30 @@ findAll().then(function () {
                                     way: 'ASC'
                                 }
                             }).then(function () {
-                                findFromTable("chauffeur_and_evenement", CalEvent, "idEv", "idCh",{isActive : {sqlName : "isActive"}}, {description: {$eq: "Carole"}}, {id: {$eq: 2}}, {}, {
+                                findFromTable("chauffeur_and_evenement", CalEvent, "idEv", "idCh",{isActive : {sqlName : "isActive"}}, {description: {$eq: "Carole"}}, {id: {$eq: 2}}, undefined, {
                                     orderBy: {
                                         value: "id",
                                         way: 'ASC'
                                     }
                                 }).then(function () {
                                     linkTo().then(function () {
-                                        removeLink().then(function () {
-                                            remove().then(function () {
-                                                updateTable({firstName: "Jean"}, {id: {$eq: 4}}).then(function () {
-                                                    deleteTable({profil: {$eq: 4}}).then(function () {
-                                                        removeFromTable("chauffeur_and_evenement", Chauffeur, "idEv", "idCh", undefined, {id: {$eq: 5}}, {}).then(function () {
-                                                            findAllDistinct().then(function () {
-                                                                findAll().then(function () {
-                                                                    customQuery("SELECT * FROM evenement;", CalEvent).then(function() {
-                                                                        console.log("----------------------------------------------");
-                                                                        console.log("Done in " + (new Date() - startDate) + " ms");
-                                                                    }, function(err) {
+                                        updateLink().then(function () {
+                                            removeLink().then(function () {
+                                                remove().then(function () {
+                                                    updateTable({firstName: "Jean"}, {id: {$eq: 4}}).then(function () {
+                                                        deleteTable({profil: {$eq: 4}}).then(function () {
+                                                            removeFromTable("chauffeur_and_evenement", Chauffeur, "idEv", "idCh", undefined, {id: {$eq: 5}}, {}).then(function () {
+                                                                findAllDistinct().then(function () {
+                                                                    findAll().then(function () {
+                                                                        customQuery("SELECT * FROM evenement;", CalEvent).then(function() {
+                                                                            console.log("----------------------------------------------");
+                                                                            console.log("Done in " + (new Date() - startDate) + " ms");
+                                                                        }, function(err) {
+                                                                            console.log(err);
+                                                                        });
+                                                                    }, function (err) {
                                                                         console.log(err);
-                                                                    });
+                                                                    })
                                                                 }, function (err) {
                                                                     console.log(err);
                                                                 })
@@ -287,8 +311,8 @@ findAll().then(function () {
                                                 console.log(err);
                                             })
                                         }, function (err) {
-                                            console.log(err);
-                                        })
+                                            console.log(err)
+                                        });
                                     }, function (err) {
                                         console.log(err);
                                     })

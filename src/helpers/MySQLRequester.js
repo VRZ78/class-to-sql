@@ -70,6 +70,34 @@ MySQLRequester.insertLink = function (id, linkId, intermediateTableName, fieldNa
 };
 
 /**
+ * Update a link between two tables
+ * @param id The id of the element from the first table
+ * @param linkId The id of the element from the second table
+ * @param intermediateTableName Name of the table used to link the two elements
+ * @param fieldName Name of the id field of the intermediate table for the first element
+ * @param linkFieldName Name of the id field of the intermediate table for the second element
+ * @param intermediateMapping Mapping for the custom values of the intermediate table
+ * @param intermediateValues Values for the intermediateTable
+ * @returns {Promise}
+ */
+MySQLRequester.updateLink = function (id, linkId, intermediateTableName, fieldName, linkFieldName, intermediateMapping, intermediateValues) {
+    return new Promise(function (resolve, reject) {
+        if (!MySQLRequester.connection) {
+            reject(new Error("No MySQL connection set. Use setConnection first."));
+        } else {
+            let updateString = SQLUtils.getUpdateString(intermediateValues, intermediateMapping, true);
+            MySQLRequester.connection.query(`UPDATE ${intermediateTableName} SET ${updateString} WHERE ${fieldName} = ${mysql.escape(id)} AND ${linkFieldName} = ${mysql.escape(linkId)};`, function (err, rows) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(rows);
+                }
+            })
+        }
+    })
+};
+
+/**
  * Delete data in a table linking two other tables
  * @param id The id of the element from the first table
  * @param linkId The id of the element from the second table
