@@ -286,7 +286,7 @@ MySQLRequester.selectCrossTable = function (tableName, className, mapping, condi
  * @param className Constructor of the class to instantiate after the request
  * @param conditions Conditions related to the first table
  * @param conditionsRemote Conditions related to the second table
- * @param conditionsLink Condition related to the linking table - TODO : Implement
+ * @param conditionsLink Condition related to the linking table
  * @param manipulations Manipulation for the query
  * @param distinct is request distinct - TODO : Implement
  * @param additionalMapping - Will instantiate the class with those addtionnal attriobutes from the rows
@@ -310,6 +310,12 @@ MySQLRequester.selectIntermediateTable = function (intermediateTableName, fieldN
                     conditionsString = conditionsString + " AND ";
                 }
                 conditionsString = conditionsString + SQLUtils.getConditionString(relationTableName, relationMapping, conditionsRemote, true);
+            }
+            if(conditionsLink) {
+                if(conditionsString.length > 0) {
+                    conditionsString = conditionsString + " AND ";
+                }
+                conditionsString = conditionsString + SQLUtils.getConditionString(intermediateTableName, additionalMapping, conditionsLink, true);
             }
             let tableLinkString = SQLUtils.getTableLinkString(mapping, tableName);
             let intermediateString = SQLUtils.getIntermediateString(intermediateTableName, fieldName, linkFieldName, relationTableName, relationMapping, tableName, mapping);
