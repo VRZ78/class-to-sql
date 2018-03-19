@@ -105,7 +105,7 @@ SQLUtils.getTableString = function (mapping) {
     let mappingKeys = Object.keys(mapping);
     for(let i = 0; i < mappingKeys.length; i++) {
         if(mapping[mappingKeys[i]].references) {
-            tableString = tableString.concat(mapping[mappingKeys[i]].references.TABLE_NAME).concat(',');
+            tableString = tableString.concat('`' + mapping[mappingKeys[i]].references.TABLE_NAME + '`').concat(',');
         }
     }
     return tableString.substr(0, tableString.length - 1);
@@ -120,7 +120,7 @@ SQLUtils.getTableLinkString = function (mapping, tableName) {
     let mappingKeys = Object.keys(mapping);
     for(let i = 0; i < mappingKeys.length; i++) {
         if(mapping[mappingKeys[i]].references) {
-            LinkString = LinkString.concat(tableName).concat('.').concat(mapping[mappingKeys[i]].sqlName).concat('=').concat(mapping[mappingKeys[i]].references.TABLE_NAME).concat('.').concat(mapping[mappingKeys[i]].references.SQL_MAPPING.id.sqlName).concat(' AND ');
+            LinkString = LinkString.concat('`' + tableName + '`').concat('.').concat(mapping[mappingKeys[i]].sqlName).concat('=').concat('`' + mapping[mappingKeys[i]].references.TABLE_NAME + '`').concat('.').concat(mapping[mappingKeys[i]].references.SQL_MAPPING.id.sqlName).concat(' AND ');
         }
     }
     return LinkString.substr(0, LinkString.length - 5);

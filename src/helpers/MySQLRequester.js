@@ -25,7 +25,7 @@ MySQLRequester.insert = function (tableName, values, mapping) {
         } else {
             let descriptionString = SQLUtils.getColumnNamesFromMapping(mapping, true);
             let valuesString = SQLUtils.getValuesFromMapping(values, mapping, true);
-            MySQLRequester.connection.query(`INSERT INTO ${tableName} (${descriptionString}) VALUES (${valuesString});`, function (err, rows) {
+            MySQLRequester.connection.query(`INSERT INTO \`${tableName}\` (${descriptionString}) VALUES (${valuesString});`, function (err, rows) {
                 if (err) {
                     reject(err);
                 } else {
@@ -58,7 +58,7 @@ MySQLRequester.insertLink = function (id, linkId, intermediateTableName, fieldNa
                 descriptionString = SQLUtils.getColumnNamesFromMapping(intermediateMapping, true);
                 valuesString = SQLUtils.getValuesFromMapping(intermediateValues, intermediateMapping, true);
             }
-            MySQLRequester.connection.query(`INSERT INTO ${intermediateTableName} (${fieldName},${linkFieldName}${descriptionString ? ' ,' + descriptionString : ''}) VALUES (${mysql.escape(id)}, ${mysql.escape(linkId)}${valuesString ? ', ' + valuesString : ''});`, function (err, rows) {
+            MySQLRequester.connection.query(`INSERT INTO \`${intermediateTableName}\` (${fieldName},${linkFieldName}${descriptionString ? ' ,' + descriptionString : ''}) VALUES (${mysql.escape(id)}, ${mysql.escape(linkId)}${valuesString ? ', ' + valuesString : ''});`, function (err, rows) {
                 if (err) {
                     reject(err);
                 } else {
@@ -86,7 +86,7 @@ MySQLRequester.updateLink = function (id, linkId, intermediateTableName, fieldNa
             reject(new Error("No MySQL connection set. Use setConnection first."));
         } else {
             let updateString = SQLUtils.getUpdateString(intermediateValues, intermediateMapping, true);
-            MySQLRequester.connection.query(`UPDATE ${intermediateTableName} SET ${updateString} WHERE ${fieldName} = ${mysql.escape(id)} AND ${linkFieldName} = ${mysql.escape(linkId)};`, function (err, rows) {
+            MySQLRequester.connection.query(`UPDATE \`${intermediateTableName}\` SET ${updateString} WHERE ${fieldName} = ${mysql.escape(id)} AND ${linkFieldName} = ${mysql.escape(linkId)};`, function (err, rows) {
                 if (err) {
                     reject(err);
                 } else {
@@ -111,7 +111,7 @@ MySQLRequester.deleteLink = function (id, linkId, intermediateTableName, fieldNa
         if (!MySQLRequester.connection) {
             reject(new Error("No MySQL connection set. Use setConnection first."));
         } else {
-            MySQLRequester.connection.query(`DELETE FROM ${intermediateTableName} WHERE ${fieldName} = ${mysql.escape(id)} AND ${linkFieldName} = ${mysql.escape(linkId)};`, function (err, rows) {
+            MySQLRequester.connection.query(`DELETE FROM \`${intermediateTableName}\` WHERE ${fieldName} = ${mysql.escape(id)} AND ${linkFieldName} = ${mysql.escape(linkId)};`, function (err, rows) {
                 if (err) {
                     reject(err);
                 } else {
@@ -138,7 +138,7 @@ MySQLRequester.update = function (tableName, values, mapping, conditions) {
             if (!conditions) {
                 // Update a single instance
                 let updateString = SQLUtils.getUpdateString(values, mapping, true);
-                MySQLRequester.connection.query(`UPDATE ${tableName} SET ${updateString} WHERE ${mapping.id.sqlName} = ${values.id};`, function (err, rows) {
+                MySQLRequester.connection.query(`UPDATE \`${tableName}\` SET ${updateString} WHERE ${mapping.id.sqlName} = ${values.id};`, function (err, rows) {
                     if (err) {
                         reject(err);
                     } else {
@@ -164,7 +164,7 @@ MySQLRequester.updateTable = function (tableName, values, mapping, conditions) {
         } else {
             let updateString = SQLUtils.getUpdateString(values, mapping);
             let conditionsString = SQLUtils.getConditionString(tableName, mapping, conditions, true);
-            MySQLRequester.connection.query(`UPDATE ${tableName} SET ${updateString} WHERE ${conditionsString};`, function (err, rows) {
+            MySQLRequester.connection.query(`UPDATE \`${tableName}\` SET ${updateString} WHERE ${conditionsString};`, function (err, rows) {
                 if (err) {
                     reject(err);
                 } else {
@@ -186,7 +186,7 @@ MySQLRequester.delete = function (tableName, id, fieldName) {
         if (!MySQLRequester.connection) {
             reject(new Error("No MySQL connection set. Use setConnection first."));
         } else {
-            MySQLRequester.connection.query(`DELETE FROM ${tableName} WHERE ${fieldName} = ${id};`, function (err, rows) {
+            MySQLRequester.connection.query(`DELETE FROM \`${tableName}\` WHERE ${fieldName} = ${id};`, function (err, rows) {
                 if (err) {
                     reject(err);
                 } else {
@@ -210,7 +210,7 @@ MySQLRequester.deleteTable = function (tableName, mapping, conditions) {
             reject(new Error("No MySQL connection set. Use setConnection first."));
         } else {
             let conditionsString = SQLUtils.getConditionString(tableName, mapping, conditions, true);
-            MySQLRequester.connection.query(`DELETE FROM ${tableName} WHERE ${conditionsString};`, function (err, rows) {
+            MySQLRequester.connection.query(`DELETE FROM \`${tableName}\` WHERE ${conditionsString};`, function (err, rows) {
                 if (err) {
                     reject(err);
                 } else {
@@ -245,7 +245,7 @@ MySQLRequester.select = function (tableName, className, mapping, conditions, man
             }
             if (!conditions) {
                 // Without conditions
-                MySQLRequester.connection.query(`SELECT ${aggregationString ? aggregationString : '*'}  FROM ${tableName} ${manipulationString};`, function (err, rows) {
+                MySQLRequester.connection.query(`SELECT ${aggregationString ? aggregationString : '*'}  FROM \`${tableName}\` ${manipulationString};`, function (err, rows) {
                     if (err) {
                         reject(err);
                     } else {
@@ -255,7 +255,7 @@ MySQLRequester.select = function (tableName, className, mapping, conditions, man
             } else {
                 // With condition
                 let conditionsString = SQLUtils.getConditionString(tableName, mapping, conditions, true);
-                MySQLRequester.connection.query(`SELECT ${aggregationString ? aggregationString : '*'}  FROM ${tableName} WHERE ${conditionsString} ${manipulationString};`, function (err, rows) {
+                MySQLRequester.connection.query(`SELECT ${aggregationString ? aggregationString : '*'}  FROM \`${tableName}\` WHERE ${conditionsString} ${manipulationString};`, function (err, rows) {
                     if (err) {
                         reject(err);
                     } else {
@@ -291,7 +291,7 @@ MySQLRequester.selectCrossTable = function (tableName, className, mapping, condi
                 conditionsString = SQLUtils.getConditionString(tableName, mapping, conditions, true);
             }
             let tableLinkString = SQLUtils.getTableLinkString(mapping, tableName);
-            MySQLRequester.connection.query(`SELECT * FROM ${tableName}${tableString.length > 0 ? ',' + tableString : ''} WHERE ${tableLinkString} ${conditionsString ? 'AND' : '' } ${conditionsString} ${manipulationString};`, function (err, rows) {
+            MySQLRequester.connection.query(`SELECT * FROM \`${tableName}\`${tableString.length > 0 ? ',' + tableString : ''} WHERE ${tableLinkString} ${conditionsString ? 'AND' : '' } ${conditionsString} ${manipulationString};`, function (err, rows) {
                 if (err) {
                     reject(err);
                 } else {
@@ -357,7 +357,7 @@ MySQLRequester.selectIntermediateTable = function (intermediateTableName, fieldN
                     intermediateString = intermediateString.split("AND")[0];
                 }
             }
-            MySQLRequester.connection.query(`SELECT * FROM ${tableName},${intermediateTableName}${relationTableName ? "," : ""}${relationTableName}${tableString.length > 0 ? ',' + tableString : ''} WHERE ${intermediateString} ${tableLinkString ? 'AND' : '' } ${tableLinkString} ${conditionsString ? 'AND' : '' } ${conditionsString} ${manipulationString};`, function (err, rows) {
+            MySQLRequester.connection.query(`SELECT * FROM \`${tableName}\`,${intermediateTableName}${relationTableName ? "," : ""}${relationTableName}${tableString.length > 0 ? ',' + tableString : ''} WHERE ${intermediateString} ${tableLinkString ? 'AND' : '' } ${tableLinkString} ${conditionsString ? 'AND' : '' } ${conditionsString} ${manipulationString};`, function (err, rows) {
                 if (err) {
                     reject(err);
                 } else {
@@ -401,7 +401,7 @@ MySQLRequester.deleteFromTable = function (intermediateTableName, fieldName, lin
             }
             let tableLinkString = SQLUtils.getTableLinkString(mapping, tableName);
             let intermediateString = SQLUtils.getIntermediateString(intermediateTableName, fieldName, linkFieldName, relationTableName, relationMapping, tableName, mapping);
-            MySQLRequester.connection.query(`DELETE ${intermediateTableName}.* FROM ${tableName},${intermediateTableName},${relationTableName}${tableString.length > 0 ? ',' + tableString : ''} WHERE ${intermediateString} ${tableLinkString ? 'AND' : '' } ${tableLinkString} ${conditionsString ? 'AND' : '' } ${conditionsString};`, function (err, rows) {
+            MySQLRequester.connection.query(`DELETE \`${intermediateTableName}\`.* FROM ${tableName},${intermediateTableName},${relationTableName}${tableString.length > 0 ? ',' + tableString : ''} WHERE ${intermediateString} ${tableLinkString ? 'AND' : '' } ${tableLinkString} ${conditionsString ? 'AND' : '' } ${conditionsString};`, function (err, rows) {
                 if (err) {
                     reject(err);
                 } else {
