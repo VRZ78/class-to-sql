@@ -357,7 +357,7 @@ MySQLRequester.selectIntermediateTable = function (intermediateTableName, fieldN
                     intermediateString = intermediateString.split("AND")[0];
                 }
             }
-            MySQLRequester.connection.query(`SELECT * FROM \`${tableName}\`,${intermediateTableName}${relationTableName ? "," : ""}${relationTableName}${tableString.length > 0 ? ',' + tableString : ''} WHERE ${intermediateString} ${tableLinkString ? 'AND' : '' } ${tableLinkString} ${conditionsString ? 'AND' : '' } ${conditionsString} ${manipulationString};`, function (err, rows) {
+            MySQLRequester.connection.query(`SELECT * FROM \`${tableName}\`,\`${intermediateTableName}\`${relationTableName ? "," : ""}\`${relationTableName}\`${tableString.length > 0 ? ',' + tableString : ''} WHERE ${intermediateString} ${tableLinkString ? 'AND' : '' } ${tableLinkString} ${conditionsString ? 'AND' : '' } ${conditionsString} ${manipulationString};`, function (err, rows) {
                 if (err) {
                     reject(err);
                 } else {
