@@ -67,11 +67,21 @@ SQLUtils.getConditionString = function (tableName, mapping, condition, trim) {
     let conditionsKeys = Object.keys(condition);
     for(let i = 0; i < conditionsKeys.length; i++) {
         let currentConditionKeys = Object.keys(condition[conditionsKeys[i]]);
-        // Handle referenced tables condition
-        if(currentConditionKeys[0].startsWith('$')){
-            conditionString = conditionString.concat(tableName).concat('.').concat(mapping[conditionsKeys[i]].sqlName).concat(" ").concat(SQLUtils.formatConditionSign(currentConditionKeys[0])).concat(" ").concat(mysql.escape(condition[conditionsKeys[i]][currentConditionKeys[0]])).concat(" AND ");
+        if(currentConditionKeys[0] === '$and' || currentConditionKeys[0] === '$or') {
+            let andOrConditionKeys = Object.keys(condition[conditionsKeys[i]][currentConditionKeys[0]]);
+            for(let j = 0; j < andOrConditionKeys.length; j++) {
+                if(andOrConditionKeys[j].startsWith('$')){
+                    conditionString = conditionString.concat(tableName).concat('.').concat(mapping[conditionsKeys[i]].sqlName).concat(" ").concat(SQLUtils.formatConditionSign(andOrConditionKeys[j])).concat(" ").concat(mysql.escape(condition[conditionsKeys[i]][currentConditionKeys[0]][andOrConditionKeys[j]])).concat(" " + currentConditionKeys[0].split("$")[1].toUpperCase() + " ");
+                } else {
+                    conditionString = conditionString.concat(SQLUtils.getConditionString(mapping[conditionsKeys[i]].references.TABLE_NAME, mapping[conditionsKeys[i]].references.SQL_MAPPING, condition[conditionsKeys[i]]));
+                }
+            }
         } else {
-            conditionString = conditionString.concat(SQLUtils.getConditionString(mapping[conditionsKeys[i]].references.TABLE_NAME, mapping[conditionsKeys[i]].references.SQL_MAPPING, condition[conditionsKeys[i]]));
+            if(currentConditionKeys[0].startsWith('$')){
+                conditionString = conditionString.concat(tableName).concat('.').concat(mapping[conditionsKeys[i]].sqlName).concat(" ").concat(SQLUtils.formatConditionSign(currentConditionKeys[0])).concat(" ").concat(mysql.escape(condition[conditionsKeys[i]][currentConditionKeys[0]])).concat(" AND ");
+            } else {
+                conditionString = conditionString.concat(SQLUtils.getConditionString(mapping[conditionsKeys[i]].references.TABLE_NAME, mapping[conditionsKeys[i]].references.SQL_MAPPING, condition[conditionsKeys[i]]));
+            }
         }
     }
     if(trim) {
