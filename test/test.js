@@ -71,7 +71,7 @@ const findAll = function () {
 
 findAllDistinct = function () {
     return new Promise((resolve, reject) => {
-        CalEvent.find(undefined, undefined, {function : "distinct", attribute : "lieu"}).then(function (calevents) {
+        CalEvent.find(undefined, undefined, {function: "distinct", attribute: "lieu"}).then(function (calevents) {
             console.log('Found ' + calevents.length + ' distinct events');
             resolve();
         }, function (err) {
@@ -148,7 +148,10 @@ const linkTo = function () {
         let singleChauffeur;
         Chauffeur.find({id: {$eq: 2}}).then(function (chauffeur) {
             singleChauffeur = chauffeur[0];
-            newEvent.linkTo(singleChauffeur, 'chauffeur_and_evenement', "idEv", "idCh", CalEvent.LINKING_MAPPING, {hasResponded : true, responseText : "OK"}).then(function () {
+            newEvent.linkTo(singleChauffeur, 'chauffeur_and_evenement', "idEv", "idCh", CalEvent.LINKING_MAPPING, {
+                hasResponded: true,
+                responseText: "OK"
+            }).then(function () {
                 console.log('event successfully linked to a chauffeur')
                 resolve();
             }, function (err) {
@@ -168,7 +171,10 @@ const updateLink = function () {
         let singleChauffeur;
         Chauffeur.find({id: {$eq: 2}}).then(function (chauffeur) {
             singleChauffeur = chauffeur[0];
-            newEvent.updateLink(singleChauffeur, 'chauffeur_and_evenement', "idEv", "idCh", CalEvent.LINKING_MAPPING, {hasResponded : false, responseText : "NOT OK"}).then(function () {
+            newEvent.updateLink(singleChauffeur, 'chauffeur_and_evenement', "idEv", "idCh", CalEvent.LINKING_MAPPING, {
+                hasResponded: false,
+                responseText: "NOT OK"
+            }).then(function () {
                 console.log('succesfully updated link to a chauffeur')
                 resolve();
             }, function (err) {
@@ -224,12 +230,12 @@ const deleteTable = function (condition) {
     })
 };
 
-const customQuery = function(query, classToInstantiate) {
+const customQuery = function (query, classToInstantiate) {
     return new Promise(function (resolve, reject) {
-        classToSql.customQuery(query, classToInstantiate).then(function(objects) {
+        classToSql.customQuery(query, classToInstantiate).then(function (objects) {
             console.log('successfully executed custom query. Found ' + objects.length + " obhects");
             resolve()
-        }, function(err) {
+        }, function (err) {
             reject(err);
         })
     })
@@ -261,34 +267,63 @@ findAll().then(function () {
                             way: 'ASC'
                         }, limit: 10
                     }).then(function () {
-                        findLike({title : {$like : "EN%"}}).then(function () {
-                            findAndPopulate({profil: {id: {$gt: 1}}}, {
-                                orderBy: {
-                                    value: "id",
-                                    way: 'ASC'
-                                }
-                            }).then(function () {
-                                findFromTable("chauffeur_and_evenement", CalEvent, "idEv", "idCh",{isActive : {sqlName : "isActive"}}, {description: {$eq: "Carole"}}, {id: {$eq: 2}}, undefined, {
-                                    orderBy: {
-                                        value: "id",
-                                        way: 'ASC'
+                        findAllConditionManipulation({
+                            $or: [{id: {$gt: 300}}, {id: {$eq: 120}}],
+                            title: {$like: "EN%"}
+                        }, {
+                            orderBy: {
+                                value: "title",
+                                way: 'ASC'
+                            }, limit: 10
+                        }).then(function () {
+                            findAllConditionManipulation(
+                                {
+                                    $or: {
+                                        $or: [{id: {$gt: 300}}, {id: {$eq: 120}}],
+                                        title: {
+                                            $like: "EN%"
+                                        }
                                     }
+                                }, {
+                                    orderBy: {
+                                        value: "title",
+                                        way: 'ASC'
+                                    }, limit: 10
                                 }).then(function () {
-                                    linkTo().then(function () {
-                                        updateLink().then(function () {
-                                            removeLink().then(function () {
-                                                remove().then(function () {
-                                                    updateTable({firstName: "Jean"}, {id: {$eq: 4}}).then(function () {
-                                                        deleteTable({profil: {$eq: 4}}).then(function () {
-                                                            removeFromTable("chauffeur_and_evenement", Chauffeur, "idEv", "idCh", undefined, {id: {$eq: 5}}, {}).then(function () {
-                                                                findAllDistinct().then(function () {
-                                                                    findAll().then(function () {
-                                                                        customQuery("SELECT * FROM evenement;", CalEvent).then(function() {
-                                                                            console.log("----------------------------------------------");
-                                                                            console.log("Done in " + (new Date() - startDate) + " ms");
-                                                                        }, function(err) {
+                                findLike({title: {$like: "EN%"}}).then(function () {
+                                    findAndPopulate({profil: {id: {$eq: 1}}}, {
+                                        orderBy: {
+                                            value: "id",
+                                            way: 'ASC'
+                                        }
+                                    }).then(function () {
+                                        findFromTable("chauffeur_and_evenement", CalEvent, "idEv", "idCh", {isActive: {sqlName: "isActive"}}, {description: {$eq: "Carole"}}, {id: {$eq: 2}}, undefined, {
+                                            orderBy: {
+                                                value: "id",
+                                                way: 'ASC'
+                                            }
+                                        }).then(function () {
+                                            linkTo().then(function () {
+                                                updateLink().then(function () {
+                                                    removeLink().then(function () {
+                                                        remove().then(function () {
+                                                            updateTable({firstName: "Jean"}, {id: {$eq: 4}}).then(function () {
+                                                                deleteTable({profil: {$eq: 4}}).then(function () {
+                                                                    removeFromTable("chauffeur_and_evenement", Chauffeur, "idEv", "idCh", undefined, {id: {$eq: 5}}, {}).then(function () {
+                                                                        findAllDistinct().then(function () {
+                                                                            findAll().then(function () {
+                                                                                customQuery("SELECT * FROM evenement;", CalEvent).then(function () {
+                                                                                    console.log("----------------------------------------------");
+                                                                                    console.log("Done in " + (new Date() - startDate) + " ms");
+                                                                                }, function (err) {
+                                                                                    console.log(err);
+                                                                                });
+                                                                            }, function (err) {
+                                                                                console.log(err);
+                                                                            })
+                                                                        }, function (err) {
                                                                             console.log(err);
-                                                                        });
+                                                                        })
                                                                     }, function (err) {
                                                                         console.log(err);
                                                                     })
@@ -305,25 +340,25 @@ findAll().then(function () {
                                                         console.log(err);
                                                     })
                                                 }, function (err) {
-                                                    console.log(err);
-                                                })
+                                                    console.log(err)
+                                                });
                                             }, function (err) {
                                                 console.log(err);
                                             })
                                         }, function (err) {
-                                            console.log(err)
-                                        });
+                                            console.log(err);
+                                        })
                                     }, function (err) {
                                         console.log(err);
                                     })
                                 }, function (err) {
-                                    console.log(err);
+                                    console.log(err)
                                 })
                             }, function (err) {
                                 console.log(err);
-                            })
+                            });
                         }, function (err) {
-                            console.log(err)
+                            console.log(err);
                         })
                     }, function (err) {
                         console.log(err);

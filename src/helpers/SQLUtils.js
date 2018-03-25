@@ -11,8 +11,8 @@ const mysql = require('mysql');
 SQLUtils.getColumnNamesFromMapping = function (mapping, ignoreId) {
     let descriptionString = '';
     let mappingKeys = Object.keys(mapping);
-    for(let i = 0; i < mappingKeys.length; i++) {
-        if(ignoreId && mappingKeys[i] !== "id") {
+    for (let i = 0; i < mappingKeys.length; i++) {
+        if (ignoreId && mappingKeys[i] !== "id") {
             descriptionString = descriptionString.concat(mapping[mappingKeys[i]].sqlName, ',');
         }
     }
@@ -29,9 +29,9 @@ SQLUtils.getColumnNamesFromMapping = function (mapping, ignoreId) {
 SQLUtils.getValuesFromMapping = function (values, mapping, ignoreId) {
     let valuesString = '';
     let mappingKeys = Object.keys(mapping);
-    for(let i = 0; i < mappingKeys.length; i++) {
-        if(ignoreId && mappingKeys[i] !== "id") {
-            valuesString = valuesString.concat(mysql.escape(SQLUtils.formatValue(mapping[mappingKeys[i]].references && values[mappingKeys[i]] && values[mappingKeys[i]].id ? values[mappingKeys[i]].id : values[mappingKeys[i]] !== undefined && values[mappingKeys[i]] !== null && (typeof values[mappingKeys[i]]) === 'object' && values[mappingKeys[i]].constructor !== Date ? null : values[mappingKeys[i]] , mapping[mappingKeys[i]].references && values[mappingKeys[i]] && values[mappingKeys[i]].constructor && values[mappingKeys[i]].constructor.SQL_MAPPING && values[mappingKeys[i]].constructor.SQL_MAPPING.id && values[mappingKeys[i]].constructor.SQL_MAPPING.id.type ? values[mappingKeys[i]].constructor.SQL_MAPPING.id.type : mapping[mappingKeys[i]].type))).concat(',');
+    for (let i = 0; i < mappingKeys.length; i++) {
+        if (ignoreId && mappingKeys[i] !== "id") {
+            valuesString = valuesString.concat(mysql.escape(SQLUtils.formatValue(mapping[mappingKeys[i]].references && values[mappingKeys[i]] && values[mappingKeys[i]].id ? values[mappingKeys[i]].id : values[mappingKeys[i]] !== undefined && values[mappingKeys[i]] !== null && (typeof values[mappingKeys[i]]) === 'object' && values[mappingKeys[i]].constructor !== Date ? null : values[mappingKeys[i]], mapping[mappingKeys[i]].references && values[mappingKeys[i]] && values[mappingKeys[i]].constructor && values[mappingKeys[i]].constructor.SQL_MAPPING && values[mappingKeys[i]].constructor.SQL_MAPPING.id && values[mappingKeys[i]].constructor.SQL_MAPPING.id.type ? values[mappingKeys[i]].constructor.SQL_MAPPING.id.type : mapping[mappingKeys[i]].type))).concat(',');
         }
     }
     return valuesString.substr(0, valuesString.length - 1);
@@ -46,10 +46,10 @@ SQLUtils.getValuesFromMapping = function (values, mapping, ignoreId) {
 SQLUtils.getUpdateString = function (values, mapping, includeUndefined) {
     let updateString = '';
     let mappingKeys = Object.keys(mapping);
-    for(let i = 0; i < mappingKeys.length; i++) {
-        if(mappingKeys[i] !== "id" && (!includeUndefined ? values[mappingKeys[i]] !== undefined : true)) {
+    for (let i = 0; i < mappingKeys.length; i++) {
+        if (mappingKeys[i] !== "id" && (!includeUndefined ? values[mappingKeys[i]] !== undefined : true)) {
             updateString = updateString.concat(mapping[mappingKeys[i]].sqlName).concat(" = ");
-            updateString = updateString.concat(mysql.escape(SQLUtils.formatValue(mapping[mappingKeys[i]].references && values[mappingKeys[i]] && values[mappingKeys[i]].id ? values[mappingKeys[i]].id : values[mappingKeys[i]] !== undefined && values[mappingKeys[i]] !== null && (typeof values[mappingKeys[i]]) === 'object' && values[mappingKeys[i]].constructor !== Date ? null : values[mappingKeys[i]] , mapping[mappingKeys[i]].references && values[mappingKeys[i]] && values[mappingKeys[i]].constructor && values[mappingKeys[i]].constructor.SQL_MAPPING && values[mappingKeys[i]].constructor.SQL_MAPPING.id && values[mappingKeys[i]].constructor.SQL_MAPPING.id.type ? values[mappingKeys[i]].constructor.SQL_MAPPING.id.type : mapping[mappingKeys[i]].type))).concat(', ');
+            updateString = updateString.concat(mysql.escape(SQLUtils.formatValue(mapping[mappingKeys[i]].references && values[mappingKeys[i]] && values[mappingKeys[i]].id ? values[mappingKeys[i]].id : values[mappingKeys[i]] !== undefined && values[mappingKeys[i]] !== null && (typeof values[mappingKeys[i]]) === 'object' && values[mappingKeys[i]].constructor !== Date ? null : values[mappingKeys[i]], mapping[mappingKeys[i]].references && values[mappingKeys[i]] && values[mappingKeys[i]].constructor && values[mappingKeys[i]].constructor.SQL_MAPPING && values[mappingKeys[i]].constructor.SQL_MAPPING.id && values[mappingKeys[i]].constructor.SQL_MAPPING.id.type ? values[mappingKeys[i]].constructor.SQL_MAPPING.id.type : mapping[mappingKeys[i]].type))).concat(', ');
         }
     }
     return updateString.substr(0, updateString.length - 2);
@@ -61,31 +61,36 @@ SQLUtils.getUpdateString = function (values, mapping, includeUndefined) {
  * @param mapping
  * @param condition
  * @param trim
+ * @param operator
  */
-SQLUtils.getConditionString = function (tableName, mapping, condition, trim) {
+SQLUtils.getConditionString = function (tableName, mapping, condition, trim, operator) {
     let conditionString = '';
     let conditionsKeys = Object.keys(condition);
-    for(let i = 0; i < conditionsKeys.length; i++) {
-        let currentConditionKeys = Object.keys(condition[conditionsKeys[i]]);
-        if(currentConditionKeys[0] === '$and' || currentConditionKeys[0] === '$or') {
-            let andOrConditionKeys = Object.keys(condition[conditionsKeys[i]][currentConditionKeys[0]]);
-            for(let j = 0; j < andOrConditionKeys.length; j++) {
-                if(andOrConditionKeys[j].startsWith('$')){
-                    conditionString = conditionString.concat(tableName).concat('.').concat(mapping[conditionsKeys[i]].sqlName).concat(" ").concat(SQLUtils.formatConditionSign(andOrConditionKeys[j])).concat(" ").concat(mysql.escape(condition[conditionsKeys[i]][currentConditionKeys[0]][andOrConditionKeys[j]])).concat(" " + currentConditionKeys[0].split("$")[1].toUpperCase() + " ");
+    // Case Or
+    if(conditionsKeys.length === 1 && conditionsKeys[0] === '$or') {
+        conditionString = conditionString.concat(SQLUtils.getConditionString(tableName, mapping, condition[conditionsKeys[0]],false, "OR"));
+        operator = "OR";
+    } else {
+        for (let i = 0; i < conditionsKeys.length; i++) {
+            // In case of operator, do a recursive call
+            if (conditionsKeys[i] === '$and' || conditionsKeys[i] === '$or') {
+                conditionString = conditionString.concat("(")
+                for (let j = 0; j < condition[conditionsKeys[i]].length; j++) {
+                    conditionString = conditionString.concat(SQLUtils.getConditionString(tableName, mapping, condition[conditionsKeys[i]][j], j === condition[conditionsKeys[i]].length - 1, conditionsKeys[i].substr(1, 5).toUpperCase()));
+                }
+                conditionString = conditionString.concat(") ").concat(operator ? operator : "AND").concat(" ");
+            } else {
+                let currentConditionKeys = Object.keys(condition[conditionsKeys[i]]);
+                if (currentConditionKeys[0].startsWith('$')) {
+                    conditionString = conditionString.concat(tableName).concat('.').concat(mapping[conditionsKeys[i]].sqlName).concat(" ").concat(SQLUtils.formatConditionSign(currentConditionKeys[0])).concat(" ").concat(mysql.escape(condition[conditionsKeys[i]][currentConditionKeys[0]])).concat(" ").concat(operator ? operator : "AND").concat(" ");
                 } else {
                     conditionString = conditionString.concat(SQLUtils.getConditionString(mapping[conditionsKeys[i]].references.TABLE_NAME, mapping[conditionsKeys[i]].references.SQL_MAPPING, condition[conditionsKeys[i]]));
                 }
             }
-        } else {
-            if(currentConditionKeys[0].startsWith('$')){
-                conditionString = conditionString.concat(tableName).concat('.').concat(mapping[conditionsKeys[i]].sqlName).concat(" ").concat(SQLUtils.formatConditionSign(currentConditionKeys[0])).concat(" ").concat(mysql.escape(condition[conditionsKeys[i]][currentConditionKeys[0]])).concat(" AND ");
-            } else {
-                conditionString = conditionString.concat(SQLUtils.getConditionString(mapping[conditionsKeys[i]].references.TABLE_NAME, mapping[conditionsKeys[i]].references.SQL_MAPPING, condition[conditionsKeys[i]]));
-            }
         }
     }
-    if(trim) {
-        return conditionString.substr(0, conditionString.length - 5); // TODO : Trim one less for or
+    if (trim) {
+        return (!operator || operator === "AND") ? conditionString.substr(0, conditionString.length - 5) : conditionString.substr(0, conditionString.length - 4); // TODO : Trim one less for or
     } else {
         return conditionString;
     }
@@ -100,7 +105,7 @@ SQLUtils.getConditionString = function (tableName, mapping, condition, trim) {
 SQLUtils.getManipulationString = function (manipulations, mapping, relatedTableName) {
     let manipulationString = '';
     let manipulationKeys = Object.keys(manipulations);
-    for(let i = 0; i < manipulationKeys.length; i++) {
+    for (let i = 0; i < manipulationKeys.length; i++) {
         manipulationString = manipulationString.concat(SQLUtils.formatManipulation(manipulationKeys[i], manipulations[manipulationKeys[i]], mapping, Object.keys(mapping), relatedTableName)).concat(" ");
     }
     return manipulationString;
@@ -113,8 +118,8 @@ SQLUtils.getManipulationString = function (manipulations, mapping, relatedTableN
 SQLUtils.getTableString = function (mapping) {
     let tableString = '';
     let mappingKeys = Object.keys(mapping);
-    for(let i = 0; i < mappingKeys.length; i++) {
-        if(mapping[mappingKeys[i]].references) {
+    for (let i = 0; i < mappingKeys.length; i++) {
+        if (mapping[mappingKeys[i]].references) {
             tableString = tableString.concat('`' + mapping[mappingKeys[i]].references.TABLE_NAME + '`').concat(',');
         }
     }
@@ -128,8 +133,8 @@ SQLUtils.getTableString = function (mapping) {
 SQLUtils.getTableLinkString = function (mapping, tableName) {
     let LinkString = '';
     let mappingKeys = Object.keys(mapping);
-    for(let i = 0; i < mappingKeys.length; i++) {
-        if(mapping[mappingKeys[i]].references) {
+    for (let i = 0; i < mappingKeys.length; i++) {
+        if (mapping[mappingKeys[i]].references) {
             LinkString = LinkString.concat('`' + tableName + '`').concat('.').concat(mapping[mappingKeys[i]].sqlName).concat('=').concat('`' + mapping[mappingKeys[i]].references.TABLE_NAME + '`').concat('.').concat(mapping[mappingKeys[i]].references.SQL_MAPPING.id.sqlName).concat(' AND ');
         }
     }
@@ -146,7 +151,7 @@ SQLUtils.getTableLinkString = function (mapping, tableName) {
  * @param relationTableName
  * @param tableName
  */
-SQLUtils.getIntermediateString = function (intermediateTableName, fieldName, linkFieldName ,relationTableName, relationMapping, tableName, mapping) {
+SQLUtils.getIntermediateString = function (intermediateTableName, fieldName, linkFieldName, relationTableName, relationMapping, tableName, mapping) {
     return `${intermediateTableName}.${linkFieldName} = ${relationTableName}.${relationMapping.id.sqlName} AND ${intermediateTableName}.${fieldName} = ${tableName}.${mapping.id.sqlName}`
 };
 
@@ -156,7 +161,7 @@ SQLUtils.getIntermediateString = function (intermediateTableName, fieldName, lin
  * @param aggregation
  * @param mapping
  */
-SQLUtils.getAggregationString = function(aggregation, mapping) {
+SQLUtils.getAggregationString = function (aggregation, mapping) {
     return `${SQLUtils.formatAggregationFunctionName(aggregation.function)}(${mysql.format(mapping[aggregation.attribute].sqlName)})`
 };
 
@@ -165,21 +170,21 @@ SQLUtils.getAggregationString = function(aggregation, mapping) {
  * @param value
  * @param type
  */
-SQLUtils.formatValue = function(value, type) {
-        if(value !== undefined && value !== null) {
-            switch(type) {
-                case "String" :
-                    return String(value);
-                case "Number" :
-                    return Number(value);
-                case "Date" :
-                    return new Date(value);
-                case "Time" :
-                    return String(value);
-            }
-        } else {
-            return null;
+SQLUtils.formatValue = function (value, type) {
+    if (value !== undefined && value !== null) {
+        switch (type) {
+            case "String" :
+                return String(value);
+            case "Number" :
+                return Number(value);
+            case "Date" :
+                return new Date(value);
+            case "Time" :
+                return String(value);
         }
+    } else {
+        return null;
+    }
 
 };
 
@@ -189,7 +194,7 @@ SQLUtils.formatValue = function(value, type) {
  * @returns {*}
  */
 SQLUtils.formatConditionSign = function (sign) {
-    switch(sign) {
+    switch (sign) {
         case "$eq" :
             return "=";
         case "$gt" :
@@ -228,7 +233,7 @@ SQLUtils.formatManipulation = function (manipulationType, manipulationValue, map
  * Return the name of a function
  */
 SQLUtils.formatAggregationFunctionName = function (functionName) {
-    switch(functionName) {
+    switch (functionName) {
         case "average" :
             return "AVG"
         case "count" :
@@ -254,14 +259,14 @@ SQLUtils.formatAggregationFunctionName = function (functionName) {
 SQLUtils.createObjectsFromRow = function (className, rows, mapping, additionalMapping) {
     let objects = [];
     let classKeys = Object.keys(className.SQL_MAPPING);
-    if(additionalMapping) {
+    if (additionalMapping) {
         classKeys = classKeys.concat(Object.keys(additionalMapping));
-        if(mapping) {
+        if (mapping) {
             mapping = Object.assign(mapping, additionalMapping);
         }
     }
-    if(!mapping) {
-        for(let i = 0; i < rows.length; i++) {
+    if (!mapping) {
+        for (let i = 0; i < rows.length; i++) {
             objects.push(new arguments[0]());
             for (let j = 0; j < classKeys.length; j++) {
                 objects[i][classKeys[j]] = rows[i][className.SQL_MAPPING[classKeys[j]].sqlName];
@@ -269,11 +274,11 @@ SQLUtils.createObjectsFromRow = function (className, rows, mapping, additionalMa
         }
     } else {
         // If mapping, need to instantiate objects of referenced tables
-        for(let i = 0; i < rows.length; i++) {
+        for (let i = 0; i < rows.length; i++) {
             objects.push(new arguments[0]());
             for (let j = 0; j < classKeys.length; j++) {
                 // In case of reference, recursive call to build the object
-                if(mapping[classKeys[j]].references) {
+                if (mapping[classKeys[j]].references) {
                     objects[i][classKeys[j]] = SQLUtils.createObjectsFromRow(mapping[classKeys[j]].references, [rows[i]])[0];
                 } else {
                     objects[i][classKeys[j]] = className.SQL_MAPPING[classKeys[j]] ? rows[i][className.SQL_MAPPING[classKeys[j]].sqlName] : rows[i][mapping[classKeys[j]].sqlName];
