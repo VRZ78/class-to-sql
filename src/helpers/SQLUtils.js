@@ -85,7 +85,7 @@ SQLUtils.getConditionString = function (tableName, mapping, condition, trim) {
         }
     }
     if(trim) {
-        return conditionString.substr(0, conditionString.length - 5);
+        return conditionString.substr(0, conditionString.length - 5); // TODO : Trim one less for or
     } else {
         return conditionString;
     }
