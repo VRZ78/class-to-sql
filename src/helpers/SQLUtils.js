@@ -81,7 +81,7 @@ SQLUtils.getConditionString = function (tableName, mapping, condition, trim, ope
                 conditionString = conditionString.concat(") ").concat(operator ? operator : "AND").concat(" ");
             } else {
                 let currentConditionKeys = Object.keys(condition[conditionsKeys[i]]);
-                if (currentConditionKeys[0].startsWith('$')) {
+                if (!(mapping[conditionsKeys[i]] && mapping[conditionsKeys[i]].references) || (mapping[conditionsKeys[i]] && mapping[conditionsKeys[i]].references && (currentConditionKeys[0].startsWith("$") && (!currentConditionKeys[0].startsWith("$and") && !currentConditionKeys[0].startsWith("$or"))))) {
                     conditionString = conditionString.concat(tableName).concat('.').concat(mapping[conditionsKeys[i]].sqlName).concat(" ").concat(SQLUtils.formatConditionSign(currentConditionKeys[0])).concat(" ").concat(mysql.escape(condition[conditionsKeys[i]][currentConditionKeys[0]])).concat(" ").concat(operator ? operator : "AND").concat(" ");
                 } else {
                     conditionString = conditionString.concat(SQLUtils.getConditionString(mapping[conditionsKeys[i]].references.TABLE_NAME, mapping[conditionsKeys[i]].references.SQL_MAPPING, condition[conditionsKeys[i]]));
