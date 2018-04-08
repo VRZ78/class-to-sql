@@ -82,7 +82,7 @@ SQLUtils.getConditionString = function (tableName, mapping, condition, trim, ope
             } else {
                 let currentConditionKeys = Object.keys(condition[conditionsKeys[i]]);
                 if (!(mapping[conditionsKeys[i]] && mapping[conditionsKeys[i]].references) || (mapping[conditionsKeys[i]] && mapping[conditionsKeys[i]].references && (currentConditionKeys[0].startsWith("$") && (!currentConditionKeys[0].startsWith("$and") && !currentConditionKeys[0].startsWith("$or"))))) {
-                    conditionString = conditionString.concat(tableName).concat('.').concat(mapping[conditionsKeys[i]].sqlName).concat(" ").concat(SQLUtils.formatConditionSign(currentConditionKeys[0])).concat(" ").concat(mysql.escape(condition[conditionsKeys[i]][currentConditionKeys[0]])).concat(" ").concat(operator ? operator : "AND").concat(" ");
+                    conditionString = conditionString.concat(tableName).concat('.').concat(mapping[conditionsKeys[i]].sqlName).concat(" ").concat(SQLUtils.formatConditionSign(currentConditionKeys[0], mysql.escape(condition[conditionsKeys[i]][currentConditionKeys[0]]))).concat(" ").concat(mysql.escape(condition[conditionsKeys[i]][currentConditionKeys[0]])).concat(" ").concat(operator ? operator : "AND").concat(" ");
                 } else {
                     conditionString = conditionString.concat(SQLUtils.getConditionString(mapping[conditionsKeys[i]].references.TABLE_NAME, mapping[conditionsKeys[i]].references.SQL_MAPPING, condition[conditionsKeys[i]]));
                 }
@@ -191,24 +191,29 @@ SQLUtils.formatValue = function (value, type) {
 /**
  * Return the correct sign according to the condition attribute
  * @param sign
+ * @param isNullValue
  * @returns {*}
  */
-SQLUtils.formatConditionSign = function (sign) {
-    switch (sign) {
-        case "$eq" :
-            return "=";
-        case "$gt" :
-            return ">";
-        case "$lt" :
-            return "<";
-        case "$gte" :
-            return ">=";
-        case "$lte" :
-            return "<=";
-        case "$ne"  :
-            return "<>";
-        case "$like" :
-            return "LIKE";
+SQLUtils.formatConditionSign = function (sign, isNullValue) {
+    if(isNullValue === 'NULL') {
+        return "IS"
+    } else {
+        switch (sign) {
+            case "$eq" :
+                return "=";
+            case "$gt" :
+                return ">";
+            case "$lt" :
+                return "<";
+            case "$gte" :
+                return ">=";
+            case "$lte" :
+                return "<=";
+            case "$ne"  :
+                return "<>";
+            case "$like" :
+                return "LIKE";
+        }
     }
 };
 
